@@ -29,11 +29,11 @@ export const fromLRCinfostr = (senstr: string): { type: "" | "info", info: Info 
 }
 
 /**
- * 解析任意一行LRC "[00:23.12]""
+ * 解析任意一行LRC [00:23.12]
  */
 export function fromLRCtime2flag(senstr: string): { type: "sentence" | "info" | "nothing", sen: Sentence, info: Info } {
     if (lrcreg.test(senstr)) {
-        // 能按照正常解析
+        // 能按照歌词行解析
         const splitstr = senstr.replace(lrcreg, (_, ...args) => {
             const [mm, ss, ms, content] = args;
             return `${mm}&#&${ss}&#&${ms}&#&${content}`
@@ -44,7 +44,7 @@ export function fromLRCtime2flag(senstr: string): { type: "sentence" | "info" | 
         const ms = parseInt(splitlist[2].slice(0, 2))
         return { type: "sentence", sen: new Sentence(mm * 60 * 100 + ss * 100 + ms, splitlist[3].trim()), info: new Info('1', '2') }
     } else {
-        // 尝试按照info解析
+        // 尝试按照info行解析
         let parseline = fromLRCinfostr(senstr)
         if (parseline.type == "info") {
             return { type: "info", info: parseline.info, sen: new Sentence(1, '2') }

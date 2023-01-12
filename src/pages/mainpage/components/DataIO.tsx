@@ -1,26 +1,10 @@
 import React, { ChildContextProvider } from 'react'
-import { UploadOutlined } from '@ant-design/icons';
+import { UploadOutlined,FileOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Button, message, Upload } from 'antd';
 
 import { Lyric, Sentence, create_from_LRC } from '../../../utils/lyric';
 import { fromLRCtime2flag } from '../../../utils/sentenceparse';
-
-const props: UploadProps = {
-    action: "",
-    beforeUpload: (file) => {
-        const isLRC = file.name.indexOf(".lrc") == file.name.length - 4
-        if (!isLRC) {
-            message.error(`${file.name} is not a LRC file`);
-        } else {
-
-        }
-        return false
-    },
-    onChange: (info) => {
-        console.log(info.fileList);
-    },
-};
 
 type DataIOProps = {
     lyc: Lyric
@@ -30,7 +14,7 @@ type DataIOProps = {
 
 export default function DataIO(props: DataIOProps) {
     return (<>
-        <Upload fileList={[]} beforeUpload={(file) => {
+        <Upload fileList={[]} accept='.lrc' beforeUpload={(file) => {
             const isLRC = file.name.indexOf(".lrc") == file.name.length - 4
             if (!isLRC) {
                 message.error(`${file.name} is not a LRC file`);
@@ -46,5 +30,6 @@ export default function DataIO(props: DataIOProps) {
         }}>
             <Button icon={<UploadOutlined />}>Upload</Button>
         </Upload>
+        <Button icon={<FileOutlined />}>New</Button>
     </>)
 }

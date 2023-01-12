@@ -8,7 +8,7 @@ export default function Mainpage() {
   const [lyc, setLyc] = useState<Lyric>(new Lyric())
 
   useEffect(() => {
-    console.log("Effect", lyc)
+    localStorage.setItem("cachelyric",JSON.stringify(lyc.toJSON()))
   }, [lyc])
 
   return (

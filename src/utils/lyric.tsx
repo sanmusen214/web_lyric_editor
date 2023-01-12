@@ -1,5 +1,18 @@
 import { fromLRCtime2flag } from "./sentenceparse"
-
+type infoobj={
+    sub:string
+    obj:string
+}
+type senobj={
+    ct:string
+    tt:string
+    st:number
+}
+type lycobj={
+    type:"lrc"
+    infolist?:Array<infoobj>
+    senlist?:Array<senobj>
+}
 export class Info {
     sub: string
     obj: string
@@ -26,9 +39,35 @@ export class Lyric {
     infolist: Array<Info>
     senlist: Array<Sentence>
 
+    toJSON=():lycobj=>{
+        const il:Array<infoobj>=[]
+        this.infolist.forEach((info)=>{
+            il.push({sub:info.sub,obj:info.obj})
+        })
+        const sl:Array<senobj>=[]
+        this.senlist.forEach((sen)=>{
+            sl.push({ct:sen.content,tt:sen.transcontent,st:sen.start})
+        })
+        return {type:"lrc",infolist:il,senlist:sl}
+    }
+
     constructor() {
         this.infolist = []
         this.senlist = []
+
+        const cachestr:string|null=localStorage.getItem("cachelyric")
+        if(cachestr){
+            const cachejson:lycobj=JSON.parse(cachestr)
+            if(cachejson.type=="lrc"){
+                cachejson.infolist?.forEach((data:infoobj)=>{
+                    this.infolist.push(new Info(data.sub,data.obj))
+                })
+                cachejson.senlist?.forEach((data:senobj)=>{
+                    this.senlist.push(new Sentence(data.st,data.ct,data.tt))
+                })
+            }
+        }
+
     }
 
     copy = (otherlyric: Lyric) => {
