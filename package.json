@@ -14,6 +14,7 @@
     "@types/react-dom": "^18.0.0",
     "antd": "^5.1.4",
     "gh-pages": "^4.0.0",
+    "howler": "^2.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-intl-universal": "^2.6.11",

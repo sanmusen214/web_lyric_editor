@@ -1,8 +1,11 @@
 #EditArea{
+    margin:0;
+    padding:0;
     position: absolute;
     top:100px;
     bottom: 0;
     width: 100%;
-    overflow: scroll;
+    overflow-x: hidden;
+    overflow-y: scroll;
     padding-top: 30px;
 }
