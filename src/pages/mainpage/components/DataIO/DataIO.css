@@ -1,0 +1,8 @@
+#DataIOArea{
+    /* 悬浮居中 */
+    position:fixed;
+    top:50%;
+    left:5px;
+    transform: translateY(-50%);
+    z-index: 999;
+}

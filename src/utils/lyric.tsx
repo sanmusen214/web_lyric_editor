@@ -39,6 +39,21 @@ export class Lyric {
     infolist: Array<Info>
     senlist: Array<Sentence>
 
+
+
+    constructor(copy_from_localstorage:boolean=false) {
+        this.infolist = []
+        this.senlist = []
+        if(copy_from_localstorage){
+            this.copyfromLocalStorage()
+        }
+    }
+
+    copy = (otherlyric: Lyric) => {
+        this.infolist = otherlyric.infolist
+        this.senlist = otherlyric.senlist
+    }
+
     toJSON=():lycobj=>{
         const il:Array<infoobj>=[]
         this.infolist.forEach((info)=>{
@@ -51,10 +66,7 @@ export class Lyric {
         return {type:"lrc",infolist:il,senlist:sl}
     }
 
-    constructor() {
-        this.infolist = []
-        this.senlist = []
-
+    copyfromLocalStorage=()=>{
         const cachestr:string|null=localStorage.getItem("cachelyric")
         if(cachestr){
             const cachejson:lycobj=JSON.parse(cachestr)
@@ -67,12 +79,6 @@ export class Lyric {
                 })
             }
         }
-
-    }
-
-    copy = (otherlyric: Lyric) => {
-        this.infolist = otherlyric.infolist
-        this.senlist = otherlyric.senlist
     }
     // info
     addinfo = (ind: number, info: Info) => {

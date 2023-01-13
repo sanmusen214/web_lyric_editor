@@ -1,5 +1,5 @@
 {
-  "homepage":"https://sanmusen214.github.io/web_lyric_editor",
+  "homepage": "https://sanmusen214.github.io/web_lyric_editor",
   "name": "onelyriceditor",
   "version": "0.1.0",
   "private": true,
@@ -7,6 +7,7 @@
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
+    "@types/howler": "^2.2.7",
     "@types/jest": "^27.0.1",
     "@types/node": "^16.7.13",
     "@types/react": "^18.0.0",
@@ -21,8 +22,8 @@
     "web-vitals": "^2.1.0"
   },
   "scripts": {
-    "predeploy":"npm run build",
-    "deploy":"gh-pages -d build",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

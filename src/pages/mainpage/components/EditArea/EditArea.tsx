@@ -3,6 +3,8 @@ import type { RadioChangeEvent } from 'antd';
 import { Radio, Timeline, Typography } from 'antd';
 import { Info, Lyric } from '../../../../utils/lyric';
 import { fromtimeflag2str } from '../../../../utils/sentenceparse';
+import "./EditArea.css"
+
 
 type EditAreaProps = {
   lyc: Lyric
@@ -54,7 +56,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
   }
 
   return (
-    <>
+    <div id="EditArea">
       <Timeline mode={"left"}>
         {lyc?.infolist.map((e, ind) => {
           return (<Timeline.Item key={e.sub} label={<Text style={{ width: '100px', float: "right" }} editable={{ onChange: (words) => setEditableInfoSub(ind, words), triggerType: ['text'], autoSize: true, enterIcon: null }}>{e.sub}</Text>}>
@@ -63,13 +65,13 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
         })}
         {lyc?.senlist.map((e, ind) => {
           return (<Timeline.Item key={e.start} label={
-            <Text style={{ width: '100px', float: "right" }} editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}>{fromtimeflag2str(e)}</Text>
+            <Text style={{ width: '90px', float: "right" }} editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}>{fromtimeflag2str(e)}</Text>
           }>
             <Text editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null }}>{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>
           </Timeline.Item>)
         })}
       </Timeline>
-    </>
+    </div>
   );
 };
 
