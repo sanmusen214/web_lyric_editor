@@ -4,6 +4,7 @@ import { Lyric } from '../../../../utils/lyric'
 import { Howl, Howler } from 'howler'
 import { Button, Row, Slider } from 'antd'
 import {PauseOutlined,CaretRightOutlined} from '@ant-design/icons'
+import { fromtimeflag2str } from '../../../../utils/sentenceparse'
 
 type PlayerAreaProps = {
   lyc: Lyric
@@ -56,6 +57,10 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
   // Animation实时改变进度条位置，如果drag就不改了
   const updateBar=()=>{
     changeBarNow((props.song?.seek()||0)/(props.song?.duration()||1))
+    const nstr=document.querySelector("#nowtimestr")
+    if(nstr){
+      nstr.innerHTML=fromtimeflag2str((props.song?.seek()||0)*100)
+    }
     requestAnimationFrame(updateBar)
   }
   useEffect(()=>{
@@ -103,6 +108,7 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
       </div>
       <div id="buttonsArea">
         <Row align={'middle'} justify={'center'}>
+        <span id="nowtimestr"></span>
         <Button onClick={playstopsong}>{playicon==="play"?<><PauseOutlined /></>:<><CaretRightOutlined /></>}</Button>
         Volume:<Slider style={{width:'15%'}} defaultValue={0.3} step={0.01} max={1.2} onChange={onVolChange}/>
         </Row>

@@ -65,7 +65,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
         })}
         {lyc?.senlist.map((e, ind) => {
           return (<Timeline.Item key={e.start} label={
-            <Text style={{ width: '90px', float: "right" }} editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}>{fromtimeflag2str(e)}</Text>
+            <Text style={{ width: '90px', float: "right" }} editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}>{fromtimeflag2str(e.start)}</Text>
           }>
             <Text editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null }}>{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>
           </Timeline.Item>)

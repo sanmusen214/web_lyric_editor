@@ -53,8 +53,11 @@ export function fromLRCtime2flag(senstr: string): { type: "sentence" | "info" | 
     }
 }
 
-export function fromtimeflag2str(timeflag: Sentence): string {
-    let timett = timeflag.start
+/**
+ * 从0.01秒为底的时间 如122表示1.22秒 转为 lrc的时间字符串
+ */
+export function fromtimeflag2str(timeflag: number): string {
+    let timett = Math.floor(timeflag)
     const mm: number = Math.floor(timett / 6000)
     let mmstr = "" + mm
     if (mm < 10) {
