@@ -31,6 +31,7 @@ export default function DataIO(props: DataIOProps) {
         reader.addEventListener('load', () => {
             const res = reader.result
             if (typeof (res) === "string") {
+                message.success("loading")
                 const song = new Howl({
                     src: res,
                     format: file.name.split(".").pop()?.toLowerCase()

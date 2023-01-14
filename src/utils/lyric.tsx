@@ -92,6 +92,9 @@ export class Lyric {
      * 传入0.01s为底的时间点，返回目前正在播放的是哪一句歌词的下标
      */
     getNowLyricIndex=(time:number):number=>{
+        if(this.checkErrTime()!=-1){
+            return -1
+        }
         time=Math.floor(time)
         for(let i=0;i<this.senlist.length;i++){
             if(i!=this.senlist.length-1){
@@ -108,6 +111,21 @@ export class Lyric {
         }
         return -1
     }
+
+    /**
+     * 检查歌词的时间是否合法，必须是递增序列,返回第一个不合法的下标,没有的话返回-1
+     */
+    checkErrTime=():number=>{
+        for(let i=0;i<this.senlist.length;i++){
+            if(i!=0){
+                if(this.senlist[i]?.start<=this.senlist[i-1]?.start){
+                    return i
+                }
+            }
+        }
+        return -1
+    }
+
     // info
     addinfo = (ind: number, info: Info) => {
         /**

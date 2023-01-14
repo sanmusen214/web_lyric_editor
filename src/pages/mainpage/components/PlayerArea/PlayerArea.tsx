@@ -2,7 +2,7 @@ import React, { ReactNode, useEffect, useRef, useState } from 'react'
 import "./PlayerArea.css"
 import { Lyric } from '../../../../utils/lyric'
 import { Howl, Howler } from 'howler'
-import { Button, Col, Row, Slider, message } from 'antd'
+import { Button, Col, Row, Slider, Spin, message } from 'antd'
 import {PauseOutlined,CaretRightOutlined} from '@ant-design/icons'
 import { fromtimeflag2str } from '../../../../utils/sentenceparse'
 import { Formatter } from 'antd/es/slider'
@@ -111,9 +111,8 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
     return `${Math.floor((value||0)*100)}%`
   }
 
-  return (
-    <div id="PlayerArea" onMouseLeave={() => { setIsDrag(false)}} onMouseMove={(e) => { if (isDrag) { dragBarNow(e) } }} onMouseUp={() => { setIsDrag(false)}}>
-    <div id="playerprogress">
+  const ActiveArea=()=>{
+    return (<div id="playerprogress">
       <div id="playerprogress-bar" onMouseDown={(e) => { setIsDrag(true); dragBarNow(e)}}>
         <div id="playernow"></div>
       </div>
@@ -123,11 +122,14 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
         <Button onClick={playstopsong}>{playicon==="play"?<><PauseOutlined /></>:<><CaretRightOutlined /></>}</Button>
         <Col span={8}>Volume:<Slider style={{width:'100%'}} tooltip={{formatter:sliderformatter}} defaultValue={0.3} step={0.01} max={1.2} onChange={onVolChange}/></Col>
         </Row>
-        
       </div>
-    </div>
+    </div>)
+  }
 
-      
+
+  return (
+    <div id="PlayerArea" onMouseLeave={() => { setIsDrag(false)}} onMouseMove={(e) => { if (isDrag) { dragBarNow(e) } }} onMouseUp={() => { setIsDrag(false)}}>
+      {props.song?<ActiveArea />:<Spin style={{position:'relative',top:'50%',transform:'translateY(-50%) translateX(-50%)',left:'50%',}}></Spin>}
     </div>
   )
 }

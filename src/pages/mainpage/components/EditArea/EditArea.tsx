@@ -6,6 +6,7 @@ import { fromtimeflag2str } from '../../../../utils/sentenceparse';
 import "./EditArea.css"
 import { Howl } from 'howler';
 import { animate } from 'popmotion';
+import {RightCircleOutlined} from '@ant-design/icons'
 
 
 type EditAreaProps = {
@@ -23,15 +24,19 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
 
   // 应该高亮的senlist下标
   const [nowind,setNowind]=useState<number>(0)
+  // 时间不合法（非递增）的senlist下标
+  const [errind,setErrind]=useState<number>(-1)
 
 
   /**
-   * 重绘，使正在播放的歌曲高亮
+   * 重绘，使正在播放的歌曲高亮,时间错误的歌词红色
    */
    const updateNowSenUI=()=>{
     const nowPlaySec001:number=100*(props.song?.seek()||0)
     const nowPlayingInd:number=props.lyc.getNowLyricIndex(nowPlaySec001)
     setNowind(nowPlayingInd)
+    const errInd:number=props.lyc.checkErrTime()
+    setErrind(errInd)
     requestAnimationFrame(updateNowSenUI)
   }
   useEffect(()=>{
@@ -85,12 +90,12 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
    * 在某一句下面加一句翻译,默认时间和上一句相同，默认内容为空
    */
   const addSentenceAfter=(ind:number)=>{
-    lyc.addsentence(ind,new Sentence(0,""))
+    lyc.addsentence(ind,new Sentence(100*(props.song?.seek()||0),""))
     updateLyc(lyc)
   }
 
     /**
-   * 在某一句下面加一句翻译,默认时间和上一句相同，默认内容为空
+   * 删除某一句
    */
      const delSentence=(ind:number)=>{
       lyc.deletesentence(ind)
@@ -110,16 +115,22 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     <div id="EditArea">
       <Timeline mode={"left"}>
         {lyc?.infolist.map((e, ind) => {
-          return (<Timeline.Item label={<Text style={{ width: '100px', float: "right" }} editable={{ onChange: (words) => setEditableInfoSub(ind, words), triggerType: ['text'], autoSize: true, enterIcon: null }}>{e.sub}</Text>}>
+          return (<Timeline.Item key={ind} label={<Text style={{ width: '100px', float: "right" }} editable={{ onChange: (words) => setEditableInfoSub(ind, words), triggerType: ['text'], autoSize: true, enterIcon: null }}>{e.sub}</Text>}>
             <Text editable={{ onChange: (words) => setEditableInfoObj(ind, words), triggerType: ['text'], enterIcon: null }}>{e.obj}</Text>
           </Timeline.Item>)
         })}
         {lyc?.senlist.map((e, ind) => {
-          return (<Timeline.Item color={nowind==ind?'green':'gray'} className={nowind==ind?'nowplaying senitem':'other senitem'} label={
+          return (<Timeline.Item 
+            key={ind} 
+            color={errind-1==ind?'orange':(errind==ind?'red':(nowind==ind?'green':'gray'))} 
+            className={nowind==ind?'nowplaying senitem':'other senitem'} 
+            label={
             <Text style={{ width: '90px', float: "right" }}
             editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}
             >{fromtimeflag2str(e.start)}</Text>
-          }>
+          }
+          dot={<RightCircleOutlined onClick={()=>{const totime=props.lyc?.senlist[ind]?.start/100;if(totime){props.song?.seek(totime)}}} />}
+          >
             <Text editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null }}>{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>
             <div className='senbuttons'>
               <Tag color={'blue'} style={{cursor:'pointer'}} onClick={()=>{
