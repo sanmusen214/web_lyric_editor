@@ -5,12 +5,14 @@ import { Info, Lyric } from '../../../../utils/lyric';
 import { fromtimeflag2str } from '../../../../utils/sentenceparse';
 import "./EditArea.css"
 import { Howl } from 'howler';
+import { animate } from 'popmotion';
 
 
 type EditAreaProps = {
   lyc: Lyric
   setLyc: React.Dispatch<React.SetStateAction<Lyric>>
   song:Howl|undefined
+  syncscroll:boolean
 }
 
 const { Text } = Typography;
@@ -39,8 +41,16 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
    * 监听当前歌词切换
    */
   useEffect(()=>{
-    console.log(nowind)
-  },[nowind])
+    if(props.syncscroll){
+      animate({
+        from: document.querySelector("#EditArea")?.scrollTop,
+        to:(document.querySelector(".nowplaying") as HTMLDivElement)?.offsetTop-60,
+        onUpdate:latest=>document.querySelector("#EditArea")?.scrollTo(0,latest)
+      })
+      console.log(document.querySelector("#EditArea")?.scrollTop)
+      console.log((document.querySelector(".nowplaying") as HTMLDivElement)?.offsetTop)
+    }
+  },[nowind,props.syncscroll])
 
   /**
    * Info left
@@ -89,7 +99,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
           </Timeline.Item>)
         })}
         {lyc?.senlist.map((e, ind) => {
-          return (<Timeline.Item key={e.start} color={nowind==ind?'green':'gray'} label={
+          return (<Timeline.Item key={e.start} color={nowind==ind?'green':'gray'} className={nowind==ind?'nowplaying':'other'} label={
             <Text style={{ width: '90px', float: "right" }} editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}>{fromtimeflag2str(e.start)}</Text>
           }>
             <Text editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null }}>{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>

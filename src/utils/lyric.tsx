@@ -45,7 +45,7 @@ export class Lyric {
         this.infolist = []
         this.senlist = []
         if(copy_from_localstorage){
-            this.copyfromLocalStorage()
+            this.copyfromLocalStorage(add_first_sen)
         }else if(add_first_sen){
             this.senlist.push(new Sentence(0,"新歌词"))
         }
@@ -68,7 +68,10 @@ export class Lyric {
         return {type:"lrc",infolist:il,senlist:sl}
     }
 
-    copyfromLocalStorage=()=>{
+    /**
+     * add_first_sen,如果localstorage里没有歌词，则添加第一句
+     */
+    copyfromLocalStorage=(add_first_sen:boolean)=>{
         const cachestr:string|null=localStorage.getItem("cachelyric")
         if(cachestr){
             const cachejson:lycobj=JSON.parse(cachestr)
@@ -80,6 +83,8 @@ export class Lyric {
                     this.senlist.push(new Sentence(data.st,data.ct,data.tt))
                 })
             }
+        }else{
+            this.senlist.push(new Sentence(0,"first sentence"))
         }
     }
 
@@ -89,7 +94,7 @@ export class Lyric {
     getNowLyricIndex=(time:number):number=>{
         time=Math.floor(time)
         for(let i=0;i<this.senlist.length;i++){
-            if(i!=this.senlist.length){
+            if(i!=this.senlist.length-1){
                 // 不是最后一句的话，处于这一句时间戳之后，下一句时间戳之前
                 if(this.senlist[i]?.start<=time && this.senlist[i+1]?.start>time){
                     return i

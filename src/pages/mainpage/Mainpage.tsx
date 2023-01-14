@@ -28,7 +28,7 @@ export default function Mainpage() {
     <div id="MainpageArea">
       <PlayerArea lyc={lyc} setLyc={setLyc} song={song} />
       <DataIO lyc={lyc} setLyc={setLyc} replaceSong={replaceSong}/>
-      <EditArea lyc={lyc} setLyc={setLyc} song={song} />
+      <EditArea lyc={lyc} setLyc={setLyc} song={song} syncscroll={syncscroll}/>
       <ToolsArea lyc={lyc} setLyc={setLyc} syncscroll={syncscroll} setSyncscroll={setSyncscroll}/>
     </div>
   )

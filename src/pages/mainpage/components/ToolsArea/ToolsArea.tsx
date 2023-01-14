@@ -14,8 +14,8 @@ const ToolsArea:React.FC<ToolsAreaProps> = (props) => {
   return (
     <div id="ToolsArea">
         <Col>
-        <Row ><Button>EditAll</Button></Row>
-        <Row><Checkbox checked={props.syncscroll} onChange={(e)=>{props.setSyncscroll(e.target.checked)}}>Sync scroll</Checkbox></Row>
+        <Row justify={'end'}><Button>EditAll</Button></Row>
+        <Row justify={'end'}><Checkbox checked={props.syncscroll} onChange={(e)=>{props.setSyncscroll(e.target.checked)}}>Sync scroll</Checkbox></Row>
         </Col>
     </div>
   )
