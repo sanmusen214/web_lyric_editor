@@ -106,7 +106,7 @@ export class Lyric {
                 }
             }
         }
-        return 0
+        return -1
     }
     // info
     addinfo = (ind: number, info: Info) => {
@@ -139,18 +139,17 @@ export class Lyric {
         /**
          * 删除某个info
          */
-        this.infolist = this.infolist.splice(ind, 1)
+        this.infolist.splice(ind, 1)
     }
 
-    // sentence
-    addsentence = (ind: number, sen: Sentence) => {
-        /**
-         * 添加一个健全的sentence.ind=-1插入最新
+    /**
+         * 添加一个健全的sentence.ind=-1插入最新,否则插在ind后面
          */
-        if (ind == -1) {
+    addsentence = (ind: number, sen: Sentence) => {
+        if (ind == -1 || ind==this.senlist.length-1) {
             this.senlist.push(sen)
         } else {
-            this.senlist = this.senlist.splice(ind, 0, sen)
+            this.senlist.splice(ind+1, 0, sen)
         }
 
     }
@@ -162,7 +161,7 @@ export class Lyric {
         if (ind == -1) {
             this.senlist.push(new Sentence(starttime, ""))
         } else {
-            this.senlist = this.senlist.splice(ind, 0, new Sentence(starttime, ""))
+            this.senlist.splice(ind, 0, new Sentence(starttime, ""))
         }
 
     }
@@ -185,14 +184,14 @@ export class Lyric {
         /**
          * 删除某个sentence
          */
-        this.senlist = this.senlist.splice(ind, 1)
+        this.senlist.splice(ind, 1)
     }
 
 }
 
 
 export const create_from_LRC = (input: string): Lyric => {
-    const lyricobj = new Lyric()
+    const lyricobj = new Lyric(false,false)
     const sentences = (input + "").split("\n")
     for (let i = 0; i < sentences.length; i++) {
         const sentenceparse

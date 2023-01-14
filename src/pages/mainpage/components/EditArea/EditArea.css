@@ -13,3 +13,11 @@
 #EditArea .ant-timeline{
     margin-right: 20%;
 }
+
+#EditArea .senitem .senbuttons{
+    visibility: hidden;
+}
+
+#EditArea .senitem:hover .senbuttons{
+    visibility: visible;
+}

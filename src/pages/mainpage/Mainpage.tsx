@@ -21,6 +21,7 @@ export default function Mainpage() {
 
   // 实时保存当前歌词到localstorage
   useEffect(() => {
+    console.log("Newwest lyc: ",lyc)
     localStorage.setItem("cachelyric",JSON.stringify(lyc.toJSON()))
   }, [lyc])
 
