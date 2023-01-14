@@ -4,11 +4,13 @@ import { Radio, Timeline, Typography } from 'antd';
 import { Info, Lyric } from '../../../../utils/lyric';
 import { fromtimeflag2str } from '../../../../utils/sentenceparse';
 import "./EditArea.css"
+import { Howl } from 'howler';
 
 
 type EditAreaProps = {
   lyc: Lyric
   setLyc: React.Dispatch<React.SetStateAction<Lyric>>
+  song:Howl|undefined
 }
 
 const { Text } = Typography;
@@ -16,6 +18,29 @@ const { Text } = Typography;
 const EditArea: React.FC<EditAreaProps> = (props) => {
 
   const lyc = props.lyc
+
+  // 应该高亮的senlist下标
+  const [nowind,setNowind]=useState<number>(0)
+
+
+  /**
+   * 重绘，使正在播放的歌曲高亮
+   */
+   const updateNowSenUI=()=>{
+    const nowPlaySec001:number=100*(props.song?.seek()||0)
+    const nowPlayingInd:number=props.lyc.getNowLyricIndex(nowPlaySec001)
+    setNowind(nowPlayingInd)
+    requestAnimationFrame(updateNowSenUI)
+  }
+  useEffect(()=>{
+    updateNowSenUI()
+  },[props.lyc,props.song])
+  /**
+   * 监听当前歌词切换
+   */
+  useEffect(()=>{
+    console.log(nowind)
+  },[nowind])
 
   /**
    * Info left
@@ -64,7 +89,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
           </Timeline.Item>)
         })}
         {lyc?.senlist.map((e, ind) => {
-          return (<Timeline.Item key={e.start} label={
+          return (<Timeline.Item key={e.start} color={nowind==ind?'green':'gray'} label={
             <Text style={{ width: '90px', float: "right" }} editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}>{fromtimeflag2str(e.start)}</Text>
           }>
             <Text editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null }}>{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>

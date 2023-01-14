@@ -41,11 +41,13 @@ export class Lyric {
 
 
 
-    constructor(copy_from_localstorage:boolean=false) {
+    constructor(copy_from_localstorage:boolean=false,add_first_sen:boolean=false) {
         this.infolist = []
         this.senlist = []
         if(copy_from_localstorage){
             this.copyfromLocalStorage()
+        }else if(add_first_sen){
+            this.senlist.push(new Sentence(0,"新歌词"))
         }
     }
 
@@ -79,6 +81,27 @@ export class Lyric {
                 })
             }
         }
+    }
+
+    /**
+     * 传入0.01s为底的时间点，返回目前正在播放的是哪一句歌词的下标
+     */
+    getNowLyricIndex=(time:number):number=>{
+        time=Math.floor(time)
+        for(let i=0;i<this.senlist.length;i++){
+            if(i!=this.senlist.length){
+                // 不是最后一句的话，处于这一句时间戳之后，下一句时间戳之前
+                if(this.senlist[i]?.start<=time && this.senlist[i+1]?.start>time){
+                    return i
+                }
+            }else{
+                // 如果是最后一句，只需要在这一句时间戳之后
+                if(this.senlist[i]?.start<=time){
+                    return i
+                }
+            }
+        }
+        return 0
     }
     // info
     addinfo = (ind: number, info: Info) => {

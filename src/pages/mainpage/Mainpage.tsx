@@ -11,8 +11,7 @@ export default function Mainpage() {
 
   const [lyc, setLyc] = useState<Lyric>(new Lyric(true))
   const [song,setSong] = useState<Howl|undefined>()
-
-  const [timep,setTimep]=useState<number>(0)
+  const [syncscroll,setSyncscroll] = useState<boolean>(false)
 
   // 上传新歌曲的最后回调
   function replaceSong(newsong:Howl){
@@ -29,8 +28,8 @@ export default function Mainpage() {
     <div id="MainpageArea">
       <PlayerArea lyc={lyc} setLyc={setLyc} song={song} />
       <DataIO lyc={lyc} setLyc={setLyc} replaceSong={replaceSong}/>
-      <EditArea lyc={lyc} setLyc={setLyc} />
-      <ToolsArea lyc={lyc} setLyc={setLyc} />
+      <EditArea lyc={lyc} setLyc={setLyc} song={song} />
+      <ToolsArea lyc={lyc} setLyc={setLyc} syncscroll={syncscroll} setSyncscroll={setSyncscroll}/>
     </div>
   )
 }

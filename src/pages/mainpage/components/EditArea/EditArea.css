@@ -9,3 +9,7 @@
     overflow-y: scroll;
     padding-top: 30px;
 }
+
+#EditArea .ant-timeline{
+    margin-right: 20%;
+}
