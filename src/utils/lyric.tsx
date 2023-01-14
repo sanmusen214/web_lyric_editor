@@ -1,4 +1,4 @@
-import { fromLRCtime2flag } from "./sentenceparse"
+import { fromLRCtime2flag, fromtimeflag2str } from "./sentenceparse"
 type infoobj={
     sub:string
     obj:string
@@ -66,6 +66,17 @@ export class Lyric {
             sl.push({ct:sen.content,tt:sen.transcontent,st:sen.start})
         })
         return {type:"lrc",infolist:il,senlist:sl}
+    }
+    
+    toLyc=():string=>{
+        let res=""
+        for(let info of this.infolist){
+            res+=`[${info.sub}:${info.obj}]\n`
+        }
+        for(let sen of this.senlist){
+            res+=`${fromtimeflag2str(sen.start)}${sen.content}\n`
+        }
+        return res
     }
 
     /**

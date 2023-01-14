@@ -11,6 +11,7 @@ type PlayerAreaProps = {
   lyc: Lyric
   setLyc: React.Dispatch<React.SetStateAction<Lyric>>
   song:Howl|undefined
+  loadsongicon:boolean
 }
 
 // 发生歌曲时间变化时，先变化时间。然后在渲染时用歌曲现在时间渲染进度条
@@ -112,7 +113,8 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
   }
 
   const ActiveArea=()=>{
-    return (<div id="playerprogress">
+    return (
+      <>
       <div id="playerprogress-bar" onMouseDown={(e) => { setIsDrag(true); dragBarNow(e)}}>
         <div id="playernow"></div>
       </div>
@@ -123,13 +125,17 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
         <Col span={8}>Volume:<Slider style={{width:'100%'}} tooltip={{formatter:sliderformatter}} defaultValue={0.3} step={0.01} max={1.2} onChange={onVolChange}/></Col>
         </Row>
       </div>
-    </div>)
-  }
+      </>)}
 
 
   return (
     <div id="PlayerArea" onMouseLeave={() => { setIsDrag(false)}} onMouseMove={(e) => { if (isDrag) { dragBarNow(e) } }} onMouseUp={() => { setIsDrag(false)}}>
-      {props.song?<ActiveArea />:<Spin style={{position:'relative',top:'50%',transform:'translateY(-50%) translateX(-50%)',left:'50%',}}></Spin>}
+      <div id="playerprogress">
+        {props.loadsongicon?<Spin>
+      <ActiveArea />
+      </Spin>:<ActiveArea />}
+      
+      </div>
     </div>
   )
 }

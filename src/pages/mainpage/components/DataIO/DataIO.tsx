@@ -1,5 +1,5 @@
 import React, { ChildContextProvider } from 'react'
-import { UploadOutlined, FileOutlined } from '@ant-design/icons';
+import { UploadOutlined, FileOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
 import { Col, Row, UploadProps } from 'antd';
 import { Button, message, Upload } from 'antd';
 
@@ -12,6 +12,8 @@ type DataIOProps = {
     lyc: Lyric
     setLyc: React.Dispatch<React.SetStateAction<Lyric>>
     replaceSong: (song: Howl) => void
+    loadsongicon: boolean
+    setLoadsongicon: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 export default function DataIO(props: DataIOProps) {
@@ -28,19 +30,23 @@ export default function DataIO(props: DataIOProps) {
 
     function uploadmusic(file: RcFile) {
         const reader = new FileReader();
+        props.setLoadsongicon(true)
         reader.addEventListener('load', () => {
-            const res = reader.result
-            if (typeof (res) === "string") {
-                message.success("loading")
-                const song = new Howl({
-                    src: res,
-                    format: file.name.split(".").pop()?.toLowerCase()
-                })
-                song.on("load", () => {
-                    message.success("success load music")
-                })
-                props.replaceSong(song)
-            }
+            return new Promise((resolve) => {
+                const res = reader.result
+                if (typeof (res) === "string") {
+                    const song = new Howl({
+                        src: res,
+                        format: file.name.split(".").pop()?.toLowerCase()
+                    })
+                    song.on("load", () => {
+                        props.replaceSong(song)
+                    })
+                    resolve(song)
+                }
+            }).then((song) => {
+                props.setLoadsongicon(false)
+            })
         });
         reader.readAsDataURL(file)
         return false
@@ -51,20 +57,51 @@ export default function DataIO(props: DataIOProps) {
         props.setLyc(newlyc)
     }
 
+    const downloadLyc = () => {
+        // 要保存的字符串
+        const stringData = props.lyc.toLyc()
+        // dada 表示要转换的字符串数据，type 表示要转换的数据格式
+        const blob = new Blob([stringData], {
+            type: "text/plain;charset=utf-8"
+        })
+        // 根据 blob生成 url链接
+        const objectURL = URL.createObjectURL(blob)
+
+        // 创建一个 a 标签Tag
+        const aTag = document.createElement('a')
+        // 设置文件的下载地址
+        aTag.href = objectURL
+        // 设置保存后的文件名称
+        aTag.download = "yourlrc.lrc"
+        // 给 a 标签添加点击事件
+        aTag.click()
+        // 释放一个之前已经存在的、通过调用 URL.createObjectURL() 创建的 URL 对象。
+        // 当你结束使用某个 URL 对象之后，应该通过调用这个方法来让浏览器知道不用在内存中继续保留对这个文件的引用了。
+        URL.revokeObjectURL(objectURL)
+
+    }
+
     return (<div id="DataIOArea">
         <Col>
+            <Row justify={'start'}>
+                <Upload fileList={[]} accept='.mp3,.flac,.mp4,.flv' beforeUpload={uploadmusic}>
+                    <Button icon={<UploadOutlined />}>Upload music</Button>
+                </Upload>
+            </Row>
+            <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'}>
                 <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
                     <Button icon={<UploadOutlined />}>Upload lyric</Button>
                 </Upload>
             </Row>
-            <Row justify={'start'}>
-                <Upload fileList={[]} accept='.mp3,.flac' beforeUpload={uploadmusic}>
-                    <Button icon={<UploadOutlined />}>Upload music</Button>
-                </Upload>
-            </Row>
+            <div style={{ 'height': '4px' }}></div>
+
             <Row justify={'start'}>
                 <Button icon={<FileOutlined />} onClick={createNewLyc}>New lyric</Button>
+            </Row>
+            <div style={{ 'height': '24px' }}></div>
+            <Row justify={'start'}>
+                <Button icon={<VerticalAlignBottomOutlined />} onClick={downloadLyc}>Download Lyc</Button>
             </Row>
         </Col>
     </div>)
