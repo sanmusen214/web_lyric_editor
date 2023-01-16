@@ -47,7 +47,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
    */
   useEffect(() => {
     // 如果歌词符合递增顺序(无乱序）且开启了同步滚动
-    if (props.syncscroll && nowind!==-1) {
+    if (props.syncscroll && nowind !== -1) {
       animate({
         from: document.querySelector("#EditArea")?.scrollTop,
         to: (document.querySelector(".nowplaying") as HTMLDivElement)?.offsetTop - 150,
@@ -92,8 +92,8 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     lyc.addsentence(ind, new Sentence(100 * (props.song?.seek() || 0), ""))
     updateLyc(lyc)
   }
-  const addInfoAfter=(ind:number)=>{
-    lyc.addinfo(ind, new Info("",""))
+  const addInfoAfter = (ind: number) => {
+    lyc.addinfo(ind, new Info("", ""))
     updateLyc(lyc)
   }
 
@@ -105,7 +105,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     updateLyc(lyc)
   }
 
-  const delInfo=(ind:number)=>{
+  const delInfo = (ind: number) => {
     lyc.deleteinfo(ind)
     updateLyc(lyc)
   }
@@ -121,22 +121,24 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
 
   return (
     <div id="EditArea">
-      {props.lyc?.senlist.length==0||props.lyc?.infolist.length==0?<div style={{'textAlign':'center',marginBottom:'20px'}}>
-        <Tag style={{ cursor: 'pointer' }} onClick={()=>addInfoAfter(-1)}>add info</Tag>
-        <Tag style={{ cursor: 'pointer' }} onClick={()=>addSentenceAfter(-1)}>add sen</Tag>
-      </div>:<></>}
+      {props.lyc?.infolist.length == 0 ?<div style={{ 'textAlign': 'center', marginBottom: '20px' }}><Tag style={{ cursor: 'pointer' }} onClick={() => addInfoAfter(-1)}>add info</Tag></div> : <></>
+      }
+      {props.lyc?.senlist.length == 0 ? <div style={{ 'textAlign': 'center', marginBottom: '20px' }}>
+        <Tag style={{ cursor: 'pointer' }} onClick={() => addSentenceAfter(-1)}>add sen</Tag>
+      </div> : <></>}
 
-      
+
+
       <Timeline mode={"left"}>
         {lyc?.infolist.map((e, ind) => {
-          return (<Timeline.Item 
-          key={ind} 
-          label={
-            <Text style={{ width: '100px', float: "right" }} 
-              editable={{ onChange: (words) => setEditableInfoSub(ind, words), triggerType: ['text'], autoSize: true, enterIcon: null }}>{e.sub?e.sub:<div>&nbsp;</div>}</Text>}
-          className="infoitem"
+          return (<Timeline.Item
+            key={ind}
+            label={
+              <Text style={{ width: '100px', float: "right" }}
+                editable={{ onChange: (words) => setEditableInfoSub(ind, words), triggerType: ['text'], autoSize: true, enterIcon: null }}>{e.sub ? e.sub : <div>&nbsp;</div>}</Text>}
+            className="infoitem"
           >
-            <Text editable={{ onChange: (words) => setEditableInfoObj(ind, words), triggerType: ['text'], enterIcon: null }}>{e.obj?e.obj:<div>&nbsp;</div>}</Text>
+            <Text editable={{ onChange: (words) => setEditableInfoObj(ind, words), triggerType: ['text'], enterIcon: null }}>{e.obj ? e.obj : <div>&nbsp;</div>}</Text>
             <div className='infobuttons'>
               <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
                 addInfoAfter(ind)
@@ -157,7 +159,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
                 editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}
               >{fromtimeflag2str(e.start)}</Text>
             }
-            dot={<RightCircleOutlined style={ind==nowind?{fontSize:'1.5rem',transform:'translateY(16%)'}:{transform:'translateY(5%)'}} onClick={() => { const totime = props.lyc?.senlist[ind]?.start / 100; if (totime) { props.song?.seek(totime) } }} />}
+            dot={<RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { const totime = props.lyc?.senlist[ind]?.start / 100; if (totime) { props.song?.seek(totime) } }} />}
           >
             <Text
               editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null }}

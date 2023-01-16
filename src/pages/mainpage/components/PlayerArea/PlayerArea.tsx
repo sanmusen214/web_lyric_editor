@@ -122,7 +122,7 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
         <Row align={'middle'} justify={'space-between'}>
         <span id="nowtimestr"></span>
         <Button onClick={playstopsong}>{playicon==="play"?<><PauseOutlined /></>:<><CaretRightOutlined /></>}</Button>
-        <Col span={8}>Volume:<Slider style={{width:'100%'}} tooltip={{formatter:sliderformatter}} defaultValue={0.3} step={0.01} max={1.2} onChange={onVolChange}/></Col>
+        <Col span={8} style={{marginTop:'3px'}}>Volume:<Slider style={{width:'80%'}} tooltip={{formatter:sliderformatter}} defaultValue={0.3} step={0.01} max={1.2} onChange={onVolChange}/></Col>
         </Row>
       </div>
       </>)}
