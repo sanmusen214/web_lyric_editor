@@ -58,6 +58,10 @@ export function fromLRCtime2flag(senstr: string): { type: "sentence" | "info" | 
  */
 export function fromtimeflag2str(timeflag: number): string {
     let timett = Math.floor(timeflag)
+    // 时间由于offset过大小于0，直接显示为0
+    if(timett<0){
+        return "[00:00.00]"
+    }
     const mm: number = Math.floor(timett / 6000)
     let mmstr = "" + mm
     if (mm>=0 && mm < 10) {

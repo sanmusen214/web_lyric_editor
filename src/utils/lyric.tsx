@@ -36,6 +36,7 @@ export class Sentence {
     }
 }
 
+// Sentence存储的start已经包含了Lyc现在的offset
 export class Lyric {
     infolist: Array<Info>
     senlist: Array<Sentence>
@@ -96,7 +97,7 @@ export class Lyric {
                     this.senlist.push(new Sentence(data.st,data.ct,data.tt))
                 })
                 console.log("copy from local")
-                this.setoffset(cachejson.offset)
+                this.offset=cachejson.offset
             }
         }else{
             this.senlist.push(new Sentence(0,"first sentence"))
@@ -156,9 +157,6 @@ export class Lyric {
     moveAll=(num:number)=>{
         for(let sen of this.senlist){
             sen.start+=num
-            if(sen.start<0){
-                sen.start=0
-            }
         }
     }
 
