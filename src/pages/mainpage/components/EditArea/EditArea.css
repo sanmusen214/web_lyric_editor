@@ -13,12 +13,33 @@
 #EditArea .ant-timeline{
     margin-right: 20%;
     margin-left:10%;
+
+}
+
+#EditArea .senitem{
+    padding-bottom: 0 !important;
+}
+
+#EditArea .ant-typography-edit-content{
+    margin-bottom: 0;
+    font-size: 1.2rem;
 }
 
 #EditArea .senitem .senbuttons{
     visibility: hidden;
+    margin-bottom: 5px;
+}
+
+#EditArea .infoitem .infobuttons{
+    visibility: hidden;
+    margin-bottom: 5px;
+
 }
 
 #EditArea .senitem:hover .senbuttons{
+    visibility: visible;
+}
+
+#EditArea .infoitem:hover .infobuttons{
     visibility: visible;
 }

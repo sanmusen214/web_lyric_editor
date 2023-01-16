@@ -8,11 +8,17 @@ import { Lyric } from '../../utils/lyric'
 import { Howl } from 'howler'
 
 export default function Mainpage() {
-
-  const [lyc, setLyc] = useState<Lyric>(new Lyric(true))
+  const [lyc, setLyc] = useState<Lyric>(new Lyric(false))
+  // replaceSong
   const [song,setSong] = useState<Howl|undefined>()
   const [loadsongicon,setLoadsongicon] = useState<boolean>(false)
   const [syncscroll,setSyncscroll] = useState<boolean>(false)
+
+
+  // 从localStorage里拿上次歌词
+  useEffect(()=>{
+    setLyc(new Lyric(true))
+  },[])
 
   // 上传新歌曲的最后回调
   function replaceSong(newsong:Howl){
@@ -20,16 +26,18 @@ export default function Mainpage() {
     setSong(newsong)
   }
 
-  // 实时保存当前歌词到localstorage
+  // 如果当前歌词内有东西（避免由useState引起的保存），保存当前歌词到localstorage
   useEffect(() => {
-    console.log("Newwest lyc: ",lyc)
-    localStorage.setItem("cachelyric",JSON.stringify(lyc.toJSON()))
+    if(lyc.senlist.length!==0 || lyc.infolist.length!==0){
+      console.log("Store Newwest lyc: ",lyc)
+      localStorage.setItem("cachelyric",JSON.stringify(lyc.toJSON()))
+    }
   }, [lyc])
 
   return (
     <div id="MainpageArea">
       <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon}/>
-      <DataIO lyc={lyc} setLyc={setLyc} replaceSong={replaceSong} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon}/>
+      <DataIO lyc={lyc} setLyc={setLyc} song={song} replaceSong={replaceSong} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon}/>
       <EditArea lyc={lyc} setLyc={setLyc} song={song} syncscroll={syncscroll}/>
       <ToolsArea lyc={lyc} setLyc={setLyc} syncscroll={syncscroll} setSyncscroll={setSyncscroll}/>
     </div>

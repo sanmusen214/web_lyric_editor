@@ -10,6 +10,7 @@ type senobj={
 }
 type lycobj={
     type:"lrc"
+    offset:number
     infolist?:Array<infoobj>
     senlist?:Array<senobj>
 }
@@ -38,22 +39,23 @@ export class Sentence {
 export class Lyric {
     infolist: Array<Info>
     senlist: Array<Sentence>
+    offset: number // 代表多少个0.01s
 
 
 
-    constructor(copy_from_localstorage:boolean=false,add_first_sen:boolean=false) {
+    constructor(copy_from_localstorage:boolean=false) {
         this.infolist = []
         this.senlist = []
+        this.offset = 0
         if(copy_from_localstorage){
-            this.copyfromLocalStorage(add_first_sen)
-        }else if(add_first_sen){
-            this.senlist.push(new Sentence(0,"新歌词"))
-        }
+            this.copyfromLocalStorage()
+    }
     }
 
     copy = (otherlyric: Lyric) => {
         this.infolist = otherlyric.infolist
         this.senlist = otherlyric.senlist
+        this.offset = otherlyric.offset
     }
 
     toJSON=():lycobj=>{
@@ -65,7 +67,7 @@ export class Lyric {
         this.senlist.forEach((sen)=>{
             sl.push({ct:sen.content,tt:sen.transcontent,st:sen.start})
         })
-        return {type:"lrc",infolist:il,senlist:sl}
+        return {type:"lrc",offset:this.offset,infolist:il,senlist:sl}
     }
     
     toLyc=():string=>{
@@ -80,9 +82,9 @@ export class Lyric {
     }
 
     /**
-     * add_first_sen,如果localstorage里没有歌词，则添加第一句
+     * 从localsotrage里添加
      */
-    copyfromLocalStorage=(add_first_sen:boolean)=>{
+    copyfromLocalStorage=()=>{
         const cachestr:string|null=localStorage.getItem("cachelyric")
         if(cachestr){
             const cachejson:lycobj=JSON.parse(cachestr)
@@ -93,6 +95,8 @@ export class Lyric {
                 cachejson.senlist?.forEach((data:senobj)=>{
                     this.senlist.push(new Sentence(data.st,data.ct,data.tt))
                 })
+                console.log("copy from local")
+                this.setoffset(cachejson.offset)
             }
         }else{
             this.senlist.push(new Sentence(0,"first sentence"))
@@ -103,11 +107,19 @@ export class Lyric {
      * 传入0.01s为底的时间点，返回目前正在播放的是哪一句歌词的下标
      */
     getNowLyricIndex=(time:number):number=>{
-        if(this.checkErrTime()!=-1){
-            return -1
-        }
+        const errind=this.checkErrTime()
+        // if(errind!=-1){
+        //     // 如果时间非递增且在time之前，则无法定位当前播放的歌词
+        //     if(errind==0 || this.senlist[errind-1].start<time){
+        //         return -1
+        //     }
+
+        // }
         time=Math.floor(time)
         for(let i=0;i<this.senlist.length;i++){
+            if(errind!=-1 && i>=errind){
+                return -1
+            }
             if(i!=this.senlist.length-1){
                 // 不是最后一句的话，处于这一句时间戳之后，下一句时间戳之前
                 if(this.senlist[i]?.start<=time && this.senlist[i+1]?.start>time){
@@ -137,15 +149,43 @@ export class Lyric {
         return -1
     }
 
+
+    /** 
+     * 整体移动，传入时间单位0.01s
+     */
+    moveAll=(num:number)=>{
+        for(let sen of this.senlist){
+            sen.start+=num
+            if(sen.start<0){
+                sen.start=0
+            }
+        }
+    }
+
+    // offset
+    /**
+     * 传入0.01s为底的时间，然后计算现在offset和用户新设的offset差，平移所有senlist
+     */
+    setoffset=(time:number)=>{
+        console.log(time,this.offset)
+        const localoffset=time-this.offset
+        this.moveAll(localoffset)
+        this.offset=time
+    }
+
     // info
+    /**
+     * ind处添加一个，放置于ind和ind+1之间
+     */
     addinfo = (ind: number, info: Info) => {
         /**
          * 添加一个健全的info
          */
-        if (ind == -1) {
+        if (ind == -1 || ind==this.senlist.length-1) {
             this.infolist.push(info)
         } else {
-            this.infolist = this.infolist.splice(ind, 0, info)
+            // splice会直接把start处的往后挪一位，所以+1
+            this.infolist.splice(ind+1, 0, info)
         }
 
     }
@@ -187,10 +227,10 @@ export class Lyric {
         /**
          * 在某个位置添加一个空的sentence
          */
-        if (ind == -1) {
+        if (ind == -1 || ind==this.senlist.length-1) {
             this.senlist.push(new Sentence(starttime, ""))
         } else {
-            this.senlist.splice(ind, 0, new Sentence(starttime, ""))
+            this.senlist.splice(ind+1, 0, new Sentence(starttime, ""))
         }
 
     }
@@ -220,7 +260,7 @@ export class Lyric {
 
 
 export const create_from_LRC = (input: string): Lyric => {
-    const lyricobj = new Lyric(false,false)
+    const lyricobj = new Lyric(false)
     const sentences = (input + "").split("\n")
     for (let i = 0; i < sentences.length; i++) {
         const sentenceparse

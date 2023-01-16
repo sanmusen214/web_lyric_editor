@@ -3,7 +3,7 @@ import { UploadOutlined, FileOutlined, VerticalAlignBottomOutlined } from '@ant-
 import { Col, Row, UploadProps } from 'antd';
 import { Button, message, Upload } from 'antd';
 
-import { Lyric, Sentence, create_from_LRC } from '../../../../utils/lyric';
+import { Info, Lyric, Sentence, create_from_LRC } from '../../../../utils/lyric';
 import { Howl } from 'howler'
 import "./DataIO.css"
 import { RcFile } from 'antd/es/upload';
@@ -11,6 +11,7 @@ import { RcFile } from 'antd/es/upload';
 type DataIOProps = {
     lyc: Lyric
     setLyc: React.Dispatch<React.SetStateAction<Lyric>>
+    song: Howl|undefined
     replaceSong: (song: Howl) => void
     loadsongicon: boolean
     setLoadsongicon: React.Dispatch<React.SetStateAction<boolean>>
@@ -53,7 +54,9 @@ export default function DataIO(props: DataIOProps) {
     }
 
     const createNewLyc = () => {
-        const newlyc = new Lyric(false, true)
+        const newlyc = new Lyric(false)
+        newlyc.addblank_sentence(-1,0)
+        newlyc.addinfo(-1,new Info("",""))
         props.setLyc(newlyc)
     }
 
@@ -85,19 +88,19 @@ export default function DataIO(props: DataIOProps) {
         <Col>
             <Row justify={'start'}>
                 <Upload fileList={[]} accept='.mp3,.flac,.mp4,.flv' beforeUpload={uploadmusic}>
-                    <Button icon={<UploadOutlined />}>Upload music</Button>
+                    <Button style={props?.song?{}:{'color':'green'}} icon={<UploadOutlined />}>Upload music</Button>
                 </Upload>
             </Row>
             <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'}>
                 <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
-                    <Button icon={<UploadOutlined />}>Upload lyric</Button>
+                    <Button  style={props?.lyc.senlist.length==0?{'color':'green'}:{}}  icon={<UploadOutlined />}>Upload lyric</Button>
                 </Upload>
             </Row>
             <div style={{ 'height': '4px' }}></div>
 
             <Row justify={'start'}>
-                <Button icon={<FileOutlined />} onClick={createNewLyc}>New lyric</Button>
+                <Button icon={<FileOutlined />} style={props?.lyc.senlist.length==0?{'color':'green'}:{}} onClick={createNewLyc}>New lyric</Button>
             </Row>
             <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'}>

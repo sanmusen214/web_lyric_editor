@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { RadioChangeEvent, Row, Tag } from 'antd';
+import { Button, RadioChangeEvent, Row, Tag } from 'antd';
 import { Radio, Timeline, Typography } from 'antd';
 import { Info, Lyric, Sentence } from '../../../../utils/lyric';
 import { fromtimeflag2str } from '../../../../utils/sentenceparse';
@@ -22,7 +22,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
 
   const lyc = props.lyc
 
-  // 应该高亮的senlist下标
+  // 应该高亮的senlist下标,为-1表示现在不该高亮
   const [nowind, setNowind] = useState<number>(0)
   // 时间不合法（非递增）的senlist下标
   const [errind, setErrind] = useState<number>(-1)
@@ -47,7 +47,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
    */
   useEffect(() => {
     // 如果歌词符合递增顺序(无乱序）且开启了同步滚动
-    if (props.syncscroll && errind == -1) {
+    if (props.syncscroll && nowind!==-1) {
       animate({
         from: document.querySelector("#EditArea")?.scrollTop,
         to: (document.querySelector(".nowplaying") as HTMLDivElement)?.offsetTop - 150,
@@ -92,6 +92,10 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     lyc.addsentence(ind, new Sentence(100 * (props.song?.seek() || 0), ""))
     updateLyc(lyc)
   }
+  const addInfoAfter=(ind:number)=>{
+    lyc.addinfo(ind, new Info("",""))
+    updateLyc(lyc)
+  }
 
   /**
  * 删除某一句
@@ -101,21 +105,46 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     updateLyc(lyc)
   }
 
+  const delInfo=(ind:number)=>{
+    lyc.deleteinfo(ind)
+    updateLyc(lyc)
+  }
+
   /**
    * 替换Lyc，使页面重新渲染
    */
   const updateLyc = (oldlyc: Lyric): void => {
-    const newlyc = new Lyric()
+    const newlyc = new Lyric(false)
     newlyc.copy(oldlyc)
     props.setLyc(newlyc)
   }
 
   return (
     <div id="EditArea">
+      {props.lyc?.senlist.length==0||props.lyc?.infolist.length==0?<div style={{'textAlign':'center',marginBottom:'20px'}}>
+        <Tag style={{ cursor: 'pointer' }} onClick={()=>addInfoAfter(-1)}>add info</Tag>
+        <Tag style={{ cursor: 'pointer' }} onClick={()=>addSentenceAfter(-1)}>add sen</Tag>
+      </div>:<></>}
+
+      
       <Timeline mode={"left"}>
         {lyc?.infolist.map((e, ind) => {
-          return (<Timeline.Item key={ind} label={<Text style={{ width: '100px', float: "right" }} editable={{ onChange: (words) => setEditableInfoSub(ind, words), triggerType: ['text'], autoSize: true, enterIcon: null }}>{e.sub}</Text>}>
-            <Text editable={{ onChange: (words) => setEditableInfoObj(ind, words), triggerType: ['text'], enterIcon: null }}>{e.obj}</Text>
+          return (<Timeline.Item 
+          key={ind} 
+          label={
+            <Text style={{ width: '100px', float: "right" }} 
+              editable={{ onChange: (words) => setEditableInfoSub(ind, words), triggerType: ['text'], autoSize: true, enterIcon: null }}>{e.sub?e.sub:<div>&nbsp;</div>}</Text>}
+          className="infoitem"
+          >
+            <Text editable={{ onChange: (words) => setEditableInfoObj(ind, words), triggerType: ['text'], enterIcon: null }}>{e.obj?e.obj:<div>&nbsp;</div>}</Text>
+            <div className='infobuttons'>
+              <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
+                addInfoAfter(ind)
+              }}>Add New</Tag>
+              <Tag color={'red'} style={{ cursor: 'pointer' }} onClick={() => {
+                delInfo(ind)
+              }}>Delete</Tag>
+            </div>
           </Timeline.Item>)
         })}
         {lyc?.senlist.map((e, ind) => {

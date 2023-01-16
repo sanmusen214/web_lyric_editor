@@ -60,18 +60,18 @@ export function fromtimeflag2str(timeflag: number): string {
     let timett = Math.floor(timeflag)
     const mm: number = Math.floor(timett / 6000)
     let mmstr = "" + mm
-    if (mm < 10) {
+    if (mm>=0 && mm < 10) {
         mmstr = "0" + mm
     }
     timett = timett % 6000
     const ss = Math.floor(timett / 100)
     let ssstr = "" + ss
-    if (ss < 10) {
+    if (ss>=0 && ss < 10) {
         ssstr = "0" + ss
     }
     const ms = timett % 100
     let msstr = "" + ms
-    if (ms < 10) {
+    if (ms>=0 && ms < 10) {
         msstr = "0" + ms
     }
     return `[${mmstr}:${ssstr}.${msstr}]`

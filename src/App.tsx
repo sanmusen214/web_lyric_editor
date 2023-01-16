@@ -21,9 +21,7 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
         <Mainpage />
-      </header>
     </div>
   );
 }
