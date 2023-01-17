@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { KeyboardEvent, useEffect, useState } from 'react';
 import { Button, RadioChangeEvent, Row, Tag } from 'antd';
 import { Radio, Timeline, Typography } from 'antd';
 import { Info, Lyric, Sentence } from '../../../../utils/lyric';
@@ -86,7 +86,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
   }
 
   /**
-   * 在某一句下面加一句翻译,默认时间和上一句相同，默认内容为空
+   * 在某一句下面加一句翻译,默认按照当前歌曲播放时间，默认内容为空
    */
   const addSentenceAfter = (ind: number) => {
     lyc.addsentence(ind, new Sentence(100 * (props.song?.seek() || 0), ""))
@@ -117,6 +117,12 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     const newlyc = new Lyric(false)
     newlyc.copy(oldlyc)
     props.setLyc(newlyc)
+  }
+
+  const oneditover=(ind:number)=>{
+    if(ind==props.lyc.senlist.length-1){
+      addSentenceAfter(-1)
+    }
   }
 
   return (
@@ -162,7 +168,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
             dot={<RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { const totime = props.lyc?.senlist[ind]?.start / 100; if (totime) { props.song?.seek(totime) } }} />}
           >
             <Text
-              editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null }}
+              editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null, onEnd:()=>{oneditover(ind)} }}
               style={{ fontSize: '1.2rem' }}
             >{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>
             <div className='senbuttons'>
