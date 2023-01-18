@@ -159,7 +159,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
           return (<Timeline.Item
             key={ind}
             color={errind - 1 == ind ? 'orange' : (errind == ind ? 'red' : (nowind == ind ? 'green' : 'gray'))}
-            className={nowind == ind ? 'nowplaying senitem' : 'other senitem'}
+            className={nowind == ind ? 'nowplaying senitem toucharea' : 'other senitem toucharea'}
             label={
               <Text style={{ width: '90px', float: "right" }}
                 editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}
@@ -167,9 +167,11 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
             }
             dot={<RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { const totime = props.lyc?.senlist[ind]?.start / 100; if (totime) { props.song?.seek(totime) } }} />}
           >
+            <div className='hovershow'>
             <Text
-              editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null, onEnd:()=>{oneditover(ind)} }}
+              editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null, onEnd:()=>{oneditover(ind)},editing:true }}
               style={{ fontSize: '1.2rem' }}
+              className='conshow'
             >{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>
             <div className='senbuttons'>
               <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
@@ -178,6 +180,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
               <Tag color={'red'} style={{ cursor: 'pointer' }} onClick={() => {
                 delSentence(ind)
               }}>Delete</Tag>
+            </div>
             </div>
           </Timeline.Item>)
         })}

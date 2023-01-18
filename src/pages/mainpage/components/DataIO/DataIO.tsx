@@ -92,14 +92,11 @@ export default function DataIO(props: DataIOProps) {
                 </Upload>
             </Row>
             <div style={{ 'height': '24px' }}></div>
-            <Row justify={'start'}>
-                <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
+            <Row justify={'start'} className='hovershow'>
+                <Upload className='conshow' fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
                     <Button  style={props?.lyc.senlist.length==0?{'color':'green'}:{}}  icon={<UploadOutlined />}>Upload lyric</Button>
                 </Upload>
-            </Row>
-            <div style={{ 'height': '4px' }}></div>
-
-            <Row justify={'start'}>
+                <div style={{'width':'4px'}}></div>
                 <Button icon={<FileOutlined />} style={props?.lyc.senlist.length==0?{'color':'green'}:{}} onClick={createNewLyc}>New lyric</Button>
             </Row>
             <div style={{ 'height': '24px' }}></div>

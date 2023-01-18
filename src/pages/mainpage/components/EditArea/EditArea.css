@@ -22,24 +22,29 @@
 
 #EditArea .ant-typography-edit-content{
     margin-bottom: 0;
+    margin-left: 10px;
     font-size: 1.2rem;
 }
 
 #EditArea .senitem .senbuttons{
-    visibility: hidden;
-    margin-bottom: 5px;
+    margin-top: 4px;
+    margin-bottom: 9px;
 }
 
 #EditArea .infoitem .infobuttons{
-    visibility: hidden;
     margin-bottom: 5px;
 
 }
 
-#EditArea .senitem:hover .senbuttons{
+/* toucharea选择触碰到哪些区域显示BC, hovershow选择所有元素的大框【ABC】, conshow选择里面常显的部分A：https://blog.csdn.net/ylfff/article/details/112437373*/
+
+#EditArea .hovershow{
+    visibility: hidden;
+}
+#EditArea .hovershow .conshow{
+    visibility: visible;
+}
+#EditArea .toucharea:hover .hovershow{
     visibility: visible;
 }
 
-#EditArea .infoitem:hover .infobuttons{
-    visibility: visible;
-}

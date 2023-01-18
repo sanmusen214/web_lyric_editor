@@ -116,7 +116,7 @@ export class Lyric {
         //     }
 
         // }
-        time=Math.floor(time)
+        time=Math.floor(time)+0.01//fix：点击tag切换时间却没高亮
         for(let i=0;i<this.senlist.length;i++){
             if(errind!=-1 && i>=errind){
                 return -1

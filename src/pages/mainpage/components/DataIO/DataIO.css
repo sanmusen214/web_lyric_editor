@@ -6,3 +6,14 @@
     transform: translateY(-50%);
     z-index: 999;
 }
+#DataIOArea .hovershow{
+    visibility: hidden;
+}
+
+#DataIOArea .hovershow:hover{
+    visibility: visible;
+}
+
+#DataIOArea .hovershow .conshow{
+    visibility: visible;
+}
