@@ -1,12 +1,14 @@
 import React, { ChildContextProvider } from 'react'
 import { UploadOutlined, FileOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
-import { Col, Row, UploadProps } from 'antd';
+import { Col, Popconfirm, Row, UploadProps } from 'antd';
 import { Button, message, Upload } from 'antd';
 
 import { Info, Lyric, Sentence, create_from_LRC } from '../../../../utils/lyric';
 import { Howl } from 'howler'
 import "./DataIO.css"
 import { RcFile } from 'antd/es/upload';
+
+import intl from 'react-intl-universal'
 
 type DataIOProps = {
     lyc: Lyric
@@ -18,6 +20,8 @@ type DataIOProps = {
 }
 
 export default function DataIO(props: DataIOProps) {
+
+
 
     function uploadlyric(file: RcFile) {
         const reader = new FileReader();
@@ -54,10 +58,12 @@ export default function DataIO(props: DataIOProps) {
     }
 
     const createNewLyc = () => {
+
         const newlyc = new Lyric(false)
         newlyc.addblank_sentence(-1,0)
         newlyc.addinfo(-1,new Info("",""))
         props.setLyc(newlyc)
+
     }
 
     const downloadLyc = () => {
@@ -88,20 +94,28 @@ export default function DataIO(props: DataIOProps) {
         <Col>
             <Row justify={'start'}>
                 <Upload fileList={[]} accept='.mp3,.flac,.mp4,.flv' beforeUpload={uploadmusic}>
-                    <Button style={props?.song?{}:{'color':'green'}} icon={<UploadOutlined />}>Upload music</Button>
+                    <Button style={props?.song?{}:{'color':'green'}} icon={<UploadOutlined />}>{intl.get("upload-music")}</Button>
                 </Upload>
             </Row>
             <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'} className='hovershow'>
                 <Upload className='conshow' fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
-                    <Button  style={props?.lyc.senlist.length==0?{'color':'green'}:{}}  icon={<UploadOutlined />}>Upload lyric</Button>
+                    <Button  style={props?.lyc.senlist.length==0?{'color':'green'}:{}}  icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
                 </Upload>
                 <div style={{'width':'4px'}}></div>
-                <Button icon={<FileOutlined />} style={props?.lyc.senlist.length==0?{'color':'green'}:{}} onClick={createNewLyc}>New lyric</Button>
+                <Popconfirm 
+                title={intl.get("create-lyric")}
+                description={intl.get("create-new-warn")}
+                onCancel={createNewLyc}
+                okText={intl.get("no")}
+                cancelText={intl.get("yes")}
+                >
+                <Button icon={<FileOutlined />} style={props?.lyc.senlist.length==0?{'color':'green'}:{}}>{intl.get("create-lyric")}</Button>
+                </Popconfirm>
             </Row>
             <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'}>
-                <Button icon={<VerticalAlignBottomOutlined />} onClick={downloadLyc}>Download Lyc</Button>
+                <Button icon={<VerticalAlignBottomOutlined />} onClick={downloadLyc}>{intl.get("download-lyric")}</Button>
             </Row>
         </Col>
     </div>)

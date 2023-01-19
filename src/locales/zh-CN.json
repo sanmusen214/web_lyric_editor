@@ -1,3 +1,26 @@
 {
-    "key1":"abcdef"
+    "":"DataIO Area", 
+    "upload-music":"上传音乐",
+    "upload-lyric":"上传歌词",
+    "create-lyric":"创建歌词",
+    "create-new-warn":"这会删除当前编辑区的所有歌词，你确认继续吗",
+    "download-lyric":"下载歌词",
+
+    "":"Edit Area",
+    "add-infoline":"新增信息",
+    "del-infoline":"删除信息",
+    "add-senline":"新增歌词",
+    "del-senline":"删除歌词",
+    "jumpto-attention":"点击以跳转到这句",
+
+    "":"Player Area",
+    "volume":"音量",
+    "nomusic-warn":"请上传歌曲",
+
+    "":"Tool Area",
+    "offset":"偏移",
+    "sync-scroll":"同步滚动",
+
+    "yes":"是",
+    "no":"否"
 }

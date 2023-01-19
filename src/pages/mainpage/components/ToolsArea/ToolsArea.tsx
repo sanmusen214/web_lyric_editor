@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import "./ToolsArea.css"
 import { Button, Checkbox, Col, InputNumber, Row, Select, Switch } from 'antd'
 import { Lyric } from '../../../../utils/lyric'
+import intl from "react-intl-universal"
 
 type ToolsAreaProps = {
   lyc: Lyric
@@ -40,7 +41,7 @@ const ToolsArea: React.FC<ToolsAreaProps> = (props) => {
     <div id="ToolsArea">
       <Col>
         <Row justify={'end'}>
-          Set offset:<InputNumber style={{ 'width': '90px' }} addonAfter="s" size='small' 
+        {intl.get("offset")}<InputNumber style={{ 'width': '90px' }} addonAfter="s" size='small' 
           value={props.lyc.offset}
           //  formatter={(value)=>{if(value){return ""+value/100};return "error"}} 
           precision={0}
@@ -48,7 +49,7 @@ const ToolsArea: React.FC<ToolsAreaProps> = (props) => {
            step={10} />
         </Row>
         <div style={{ 'height': '4px' }}></div>
-        <Row justify={'end'}><Switch checked={props.syncscroll} onChange={(chk) => { props.setSyncscroll(chk) }}></Switch>Sync scroll</Row>
+        <Row justify={'end'}><Switch checked={props.syncscroll} onChange={(chk) => { props.setSyncscroll(chk) }}></Switch>{intl.get("sync-scroll")}</Row>
       </Col>
     </div>
   )

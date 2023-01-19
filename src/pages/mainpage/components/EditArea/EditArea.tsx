@@ -1,5 +1,5 @@
 import React, { KeyboardEvent, useEffect, useState } from 'react';
-import { Button, RadioChangeEvent, Row, Tag } from 'antd';
+import { Button, RadioChangeEvent, Row, Tag, Tooltip } from 'antd';
 import { Radio, Timeline, Typography } from 'antd';
 import { Info, Lyric, Sentence } from '../../../../utils/lyric';
 import { fromtimeflag2str } from '../../../../utils/sentenceparse';
@@ -7,6 +7,7 @@ import "./EditArea.css"
 import { Howl } from 'howler';
 import { animate } from 'popmotion';
 import { RightCircleOutlined } from '@ant-design/icons'
+import intl from "react-intl-universal"
 
 
 type EditAreaProps = {
@@ -142,16 +143,16 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
             label={
               <Text style={{ width: '100px', float: "right" }}
                 editable={{ onChange: (words) => setEditableInfoSub(ind, words), triggerType: ['text'], autoSize: true, enterIcon: null }}>{e.sub ? e.sub : <div>&nbsp;</div>}</Text>}
-            className="infoitem"
+            className="infoitem toucharea"
           >
             <Text editable={{ onChange: (words) => setEditableInfoObj(ind, words), triggerType: ['text'], enterIcon: null }}>{e.obj ? e.obj : <div>&nbsp;</div>}</Text>
-            <div className='infobuttons'>
+            <div className='infobuttons hovershow'>
               <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
                 addInfoAfter(ind)
-              }}>Add New</Tag>
+              }}>{intl.get("add-infoline")}</Tag>
               <Tag color={'red'} style={{ cursor: 'pointer' }} onClick={() => {
                 delInfo(ind)
-              }}>Delete</Tag>
+              }}>{intl.get("del-infoline")}</Tag>
             </div>
           </Timeline.Item>)
         })}
@@ -165,22 +166,21 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
                 editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}
               >{fromtimeflag2str(e.start)}</Text>
             }
-            dot={<RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { const totime = props.lyc?.senlist[ind]?.start / 100; if (totime) { props.song?.seek(totime) } }} />}
+            dot={<Tooltip title={intl.get('jumpto-attention')}><RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { const totime = props.lyc?.senlist[ind]?.start / 100; if (totime) { props.song?.seek(totime) } }} /></Tooltip>}
           >
-            <div className='hovershow'>
+
             <Text
               editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null, onEnd:()=>{oneditover(ind)},editing:true }}
               style={{ fontSize: '1.2rem' }}
               className='conshow'
             >{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>
-            <div className='senbuttons'>
+            <div className='senbuttons hovershow'>
               <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
                 addSentenceAfter(ind)
-              }}>Add New</Tag>
+              }}>{intl.get("add-senline")}</Tag>
               <Tag color={'red'} style={{ cursor: 'pointer' }} onClick={() => {
                 delSentence(ind)
-              }}>Delete</Tag>
-            </div>
+              }}>{intl.get("del-senline")}</Tag>
             </div>
           </Timeline.Item>)
         })}

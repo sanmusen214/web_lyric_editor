@@ -6,6 +6,7 @@ import { Button, Col, Row, Slider, Spin, message } from 'antd'
 import {PauseOutlined,CaretRightOutlined} from '@ant-design/icons'
 import { fromtimeflag2str } from '../../../../utils/sentenceparse'
 import { Formatter } from 'antd/es/slider'
+import intl from "react-intl-universal"
 
 type PlayerAreaProps = {
   lyc: Lyric
@@ -91,7 +92,7 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
   // 点击播放/暂停按钮
   const playstopsong=()=>{
     if(!props.song){
-      message.warning("please upload song")
+      message.warning(intl.get("nomusic-warn"))
       return
     }
     props.song?.volume(volume)
@@ -122,7 +123,7 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
         <Row align={'middle'} justify={'space-between'}>
         <span id="nowtimestr"></span>
         <Button onClick={playstopsong}>{playicon==="play"?<><PauseOutlined /></>:<><CaretRightOutlined /></>}</Button>
-        <Col span={8} style={{marginTop:'3px'}}>Volume:<Slider style={{width:'80%'}} tooltip={{formatter:sliderformatter}} defaultValue={0.3} step={0.01} max={1.2} onChange={onVolChange}/></Col>
+        <Col span={6} style={{marginTop:'3px'}}>{intl.get("volume")}<Slider tooltip={{formatter:sliderformatter}} defaultValue={0.3} step={0.01} max={1.2} onChange={onVolChange}/></Col>
         </Row>
       </div>
       </>)}

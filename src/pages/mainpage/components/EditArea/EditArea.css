@@ -36,7 +36,7 @@
 
 }
 
-/* toucharea选择触碰到哪些区域显示BC, hovershow选择所有元素的大框【ABC】, conshow选择里面常显的部分A：https://blog.csdn.net/ylfff/article/details/112437373*/
+/* toucharea选择触碰到哪些区域才显示(【ABC】), hovershow选择所有元素的大框【ABC】并隐藏里面内容, conshow选择里面常显的部分A:  https://blog.csdn.net/ylfff/article/details/112437373*/
 
 #EditArea .hovershow{
     visibility: hidden;

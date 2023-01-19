@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import intl from 'react-intl-universal';//国际化
 import zhCN from './locales/zh-CN.json'//中文包
-// import TestPage from './pages/mainpage/TestPage';
+import enUS from './locales/en-US.json'//英文包
+
 import Mainpage from './pages/mainpage/Mainpage';
 
 
 // locale data
 const locales = {
-  // "en-US": require('../locales/en-US.js'),
+  "en-US": enUS,
   "zh-CN": zhCN,
 };
 
