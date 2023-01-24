@@ -213,6 +213,7 @@ export class Lyric {
          * 添加一个健全的sentence.ind=-1插入最新,否则插在ind后面
          */
     addsentence = (ind: number, sen: Sentence) => {
+        sen.start=Math.floor(sen.start)
         if (ind == -1 || ind==this.senlist.length-1) {
             this.senlist.push(sen)
         } else {
@@ -225,6 +226,7 @@ export class Lyric {
         /**
          * 在某个位置添加一个空的sentence
          */
+        starttime=Math.floor(starttime)
         if (ind == -1 || ind==this.senlist.length-1) {
             this.senlist.push(new Sentence(starttime, ""))
         } else {
@@ -236,7 +238,7 @@ export class Lyric {
     editsentence_time = (ind: number, newtime: string): void => {
         const res = fromLRCtime2flag(newtime)
         if (res.type == "sentence") {
-            this.senlist[ind].start = res.sen.start
+            this.senlist[ind].start = Math.floor(res.sen.start)
         }
     }
 
