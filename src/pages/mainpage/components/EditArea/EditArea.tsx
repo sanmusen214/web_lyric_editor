@@ -78,6 +78,10 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     lyc.editsentence_time(ind, input)
     updateLyc(lyc)
   }
+  const updateTime=(ind:number)=>{
+    lyc.senlist[ind].start=100*(props.song?.seek()||0)
+    updateLyc(lyc)
+  }
   /**
    * Sentence content
    */
@@ -120,23 +124,18 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     props.setLyc(newlyc)
   }
 
-  const oneditover=(ind:number)=>{
-    if(ind==props.lyc.senlist.length-1){
+  const oneditover = (ind: number) => {
+    if (ind == props.lyc.senlist.length - 1) {
       addSentenceAfter(-1)
     }
   }
 
   return (
     <div id="EditArea">
-      {props.lyc?.infolist.length == 0 ?<div style={{ 'textAlign': 'center', marginBottom: '20px' }}><Tag style={{ cursor: 'pointer' }} onClick={() => addInfoAfter(-1)}>add info</Tag></div> : <></>
-      }
-      {props.lyc?.senlist.length == 0 ? <div style={{ 'textAlign': 'center', marginBottom: '20px' }}>
-        <Tag style={{ cursor: 'pointer' }} onClick={() => addSentenceAfter(-1)}>add sen</Tag>
-      </div> : <></>}
-
-
 
       <Timeline mode={"left"}>
+        {props.lyc?.infolist.length == 0 ? <div style={{ 'textAlign': 'center', marginBottom: '20px' }}><Tag style={{ cursor: 'pointer' }} onClick={() => addInfoAfter(-1)}>add info</Tag></div> : <></>
+        }
         {lyc?.infolist.map((e, ind) => {
           return (<Timeline.Item
             key={ind}
@@ -156,21 +155,32 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
             </div>
           </Timeline.Item>)
         })}
+
+        {props.lyc?.senlist.length == 0 ? <div style={{ 'textAlign': 'center', marginBottom: '20px' }}>
+          <Tag style={{ cursor: 'pointer' }} onClick={() => addSentenceAfter(-1)}>add sen</Tag>
+        </div> : <></>}
+
         {lyc?.senlist.map((e, ind) => {
           return (<Timeline.Item
             key={ind}
             color={errind - 1 == ind ? 'orange' : (errind == ind ? 'red' : (nowind == ind ? 'green' : 'gray'))}
             className={nowind == ind ? 'nowplaying senitem toucharea' : 'other senitem toucharea'}
-            label={
+            label={<>
               <Text style={{ width: '90px', float: "right" }}
                 editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}
               >{fromtimeflag2str(e.start)}</Text>
+              <div className='hovershow' style={{position:'absolute',right:-10,top:'23px'}}>
+                <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
+                  updateTime(ind)
+                }}>{intl.get("update-timeflag")}</Tag>
+              </div>
+              </>
             }
             dot={<Tooltip title={intl.get('jumpto-attention')}><RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { const totime = props.lyc?.senlist[ind]?.start / 100; if (totime) { props.song?.seek(totime) } }} /></Tooltip>}
           >
 
             <Text
-              editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null, onEnd:()=>{oneditover(ind)},editing:true }}
+              editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null, onEnd: () => { oneditover(ind) }, editing: true }}
               style={{ fontSize: '1.2rem' }}
               className='conshow'
             >{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>
@@ -185,6 +195,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
           </Timeline.Item>)
         })}
       </Timeline>
+      <div style={{ height: '100px' }}></div>
     </div>
   );
 };

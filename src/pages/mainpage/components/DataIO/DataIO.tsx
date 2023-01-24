@@ -1,5 +1,5 @@
 import React, { ChildContextProvider } from 'react'
-import { UploadOutlined, FileOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
+import { CloudDownloadOutlined, UploadOutlined, FileOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
 import { Col, Popconfirm, Row, UploadProps } from 'antd';
 import { Button, message, Upload } from 'antd';
 
@@ -112,6 +112,8 @@ export default function DataIO(props: DataIOProps) {
                 >
                 <Button icon={<FileOutlined />} style={props?.lyc.senlist.length==0?{'color':'green'}:{}}>{intl.get("create-lyric")}</Button>
                 </Popconfirm>
+                <div style={{'width':'4px'}}></div>
+                <Button icon={<CloudDownloadOutlined />} onClick={()=>{window.open("https://music.liuzhijin.cn/")}}>{intl.get("find-lyric")}</Button>
             </Row>
             <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'}>

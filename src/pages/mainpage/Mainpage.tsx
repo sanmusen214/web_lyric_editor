@@ -39,7 +39,7 @@ export default function Mainpage() {
       <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon}/>
       <DataIO lyc={lyc} setLyc={setLyc} song={song} replaceSong={replaceSong} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon}/>
       <EditArea lyc={lyc} setLyc={setLyc} song={song} syncscroll={syncscroll}/>
-      <ToolsArea lyc={lyc} setLyc={setLyc} syncscroll={syncscroll} setSyncscroll={setSyncscroll}/>
+      <ToolsArea lyc={lyc} song={song} setLyc={setLyc} syncscroll={syncscroll} setSyncscroll={setSyncscroll}/>
     </div>
   )
 }
