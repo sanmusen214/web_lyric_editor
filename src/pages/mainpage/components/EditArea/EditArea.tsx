@@ -80,7 +80,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     updateLyc(lyc)
   }
   const updateTime=(ind:number)=>{
-    lyc.senlist[ind].start=100*(props.song?.seek()||0)
+    lyc.update_time(ind,100*(props.song?.seek()||0))
     updateLyc(lyc)
   }
   /**

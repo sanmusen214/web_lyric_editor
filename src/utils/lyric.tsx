@@ -222,6 +222,17 @@ export class Lyric {
 
     }
 
+    /**
+     * 更新某句时间,0.01s为单位
+     */
+    update_time=(ind:number,starttime:number):void=>{
+        starttime=Math.floor(starttime)
+        if(ind>=0 && ind<=this.senlist.length-1){
+            this.senlist[ind].start=starttime
+        }
+
+    }
+
     addblank_sentence = (ind: number, starttime: number) => {
         /**
          * 在某个位置添加一个空的sentence
