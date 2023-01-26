@@ -273,3 +273,12 @@ export const create_from_LRC = (input: string): Lyric => {
     }
     return lyricobj
 }
+
+export const create_from_TXT=(input:string):Lyric=>{
+    const lyricobj=new Lyric(false)
+    const sentences=(input+"").split("\n")
+    for (let sen of sentences){
+        lyricobj.addsentence(-1,new Sentence(0,sen))
+    }
+    return lyricobj
+}

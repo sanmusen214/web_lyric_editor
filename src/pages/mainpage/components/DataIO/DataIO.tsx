@@ -1,8 +1,8 @@
-import React, { ChildContextProvider } from 'react'
+import React, { ChildContextProvider, useState } from 'react'
 import { CloudDownloadOutlined, UploadOutlined, FileOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
-import { Col, Popconfirm, Row, UploadProps } from 'antd';
+import { Col, Drawer, Popconfirm, Row, UploadProps } from 'antd';
 import { Button, message, Upload } from 'antd';
-
+import { PopInputArea } from './PopInputArea';
 import { Info, Lyric, Sentence, create_from_LRC } from '../../../../utils/lyric';
 import { Howl } from 'howler'
 import "./DataIO.css"
@@ -13,7 +13,7 @@ import intl from 'react-intl-universal'
 type DataIOProps = {
     lyc: Lyric
     setLyc: React.Dispatch<React.SetStateAction<Lyric>>
-    song: Howl|undefined
+    song: Howl | undefined
     replaceSong: (song: Howl) => void
     loadsongicon: boolean
     setLoadsongicon: React.Dispatch<React.SetStateAction<boolean>>
@@ -21,7 +21,7 @@ type DataIOProps = {
 
 export default function DataIO(props: DataIOProps) {
 
-
+    const [drawopen,setDrawopen]=useState<boolean>(false)
 
     function uploadlyric(file: RcFile) {
         const reader = new FileReader();
@@ -60,8 +60,8 @@ export default function DataIO(props: DataIOProps) {
     const createNewLyc = () => {
 
         const newlyc = new Lyric(false)
-        newlyc.addblank_sentence(-1,0)
-        newlyc.addinfo(-1,new Info("",""))
+        newlyc.addblank_sentence(-1, 0)
+        newlyc.addinfo(-1, new Info("", ""))
         props.setLyc(newlyc)
 
     }
@@ -90,35 +90,50 @@ export default function DataIO(props: DataIOProps) {
 
     }
 
+
     return (<div id="DataIOArea">
         <Col>
             <Row justify={'start'}>
                 <Upload fileList={[]} accept='.mp3,.flac,.mp4,.flv' beforeUpload={uploadmusic}>
-                    <Button style={props?.song?{}:{'color':'green'}} icon={<UploadOutlined />}>{intl.get("upload-music")}</Button>
+                    <Button style={props?.song ? {} : { 'color': 'green' }} icon={<UploadOutlined />}>{intl.get("upload-music")}</Button>
                 </Upload>
             </Row>
             <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'} className='hovershow'>
                 <Upload className='conshow' fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
-                    <Button  style={props?.lyc.senlist.length==0?{'color':'green'}:{}}  icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
+                    <Button style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
                 </Upload>
-                <div style={{'width':'4px'}}></div>
-                <Popconfirm 
-                title={intl.get("create-lyric")}
-                description={intl.get("create-new-warn")}
-                onCancel={createNewLyc}
-                okText={intl.get("no")}
-                cancelText={intl.get("yes")}
+                <div style={{ 'width': '4px' }}></div>
+                <Button icon={<CloudDownloadOutlined />} onClick={()=>setDrawopen(true)}>{intl.get("upload-sens")}</Button>
+                <div style={{ 'width': '4px' }}></div>
+                <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button>
+            </Row>
+            <div style={{ 'height': '4px' }}></div>
+            <Row>
+                <Popconfirm
+                    title={intl.get("create-lyric")}
+                    description={intl.get("create-new-warn")}
+                    onCancel={createNewLyc}
+                    okText={intl.get("no")}
+                    cancelText={intl.get("yes")}
+                    placement="topLeft"
                 >
-                <Button icon={<FileOutlined />} style={props?.lyc.senlist.length==0?{'color':'green'}:{}}>{intl.get("create-lyric")}</Button>
+                    <Button icon={<FileOutlined />} style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}}>{intl.get("create-lyric")}</Button>
                 </Popconfirm>
-                <div style={{'width':'4px'}}></div>
-                <Button icon={<CloudDownloadOutlined />} onClick={()=>{window.open("https://music.liuzhijin.cn/")}}>{intl.get("find-lyric")}</Button>
             </Row>
             <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'}>
                 <Button icon={<VerticalAlignBottomOutlined />} onClick={downloadLyc}>{intl.get("download-lyric")}</Button>
             </Row>
         </Col>
+        <Drawer 
+        title={intl.get("upload-sens")}
+        onClose={()=>setDrawopen(false)}
+        open={drawopen}
+        placement="left"
+        >
+            <PopInputArea drawopen={drawopen} setLyc={props.setLyc}/>
+        </Drawer>
+
     </div>)
 }
