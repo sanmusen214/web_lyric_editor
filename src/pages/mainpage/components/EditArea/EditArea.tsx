@@ -8,6 +8,7 @@ import { Howl } from 'howler';
 import { animate } from 'popmotion';
 import { RightCircleOutlined } from '@ant-design/icons'
 import intl from "react-intl-universal"
+import TextArea from 'antd/es/input/TextArea';
 
 
 type EditAreaProps = {
@@ -176,14 +177,19 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
               </div>
               </>
             }
-            dot={<Tooltip title={intl.get('jumpto-attention')}><RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { const totime = props.lyc?.senlist[ind]?.start / 100; if (totime) { props.song?.seek(totime) } }} /></Tooltip>}
+            dot={<Tooltip title={intl.get('jumpto-attention')}><RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { 
+              const totime = props.lyc?.senlist[ind]?.start / 100;
+              if (totime==0 || totime) { props.song?.seek(totime) } }} /></Tooltip>}
           >
 
-            <Text
-              editable={{ onChange: (words) => setEditableSenCont(ind, words), triggerType: ['text'], enterIcon: null, onEnd: () => { oneditover(ind) }, editing: true }}
-              style={{ fontSize: '1.2rem' }}
-              className='conshow'
-            >{e.content.length > 0 ? e.content : <div>&nbsp;</div>}</Text>
+            <TextArea
+            onChange={(e) => setEditableSenCont(ind, e.target.value)}
+            autoSize
+            onPressEnter={()=>oneditover(ind)}
+            style={{ fontSize: '1.2rem' }}
+            className='conshow'
+            value={e.content.length > 0 ? e.content : ""}
+            />
             <div className='senbuttons hovershow'>
               <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
                 addSentenceAfter(ind)
