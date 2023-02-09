@@ -1,4 +1,4 @@
-import React, { KeyboardEvent, useEffect, useState } from 'react';
+import React, { FormEvent, KeyboardEvent, useEffect, useState } from 'react';
 import { Button, RadioChangeEvent, Row, Tag, Tooltip } from 'antd';
 import { Radio, Timeline, Typography } from 'antd';
 import { Info, Lyric, Sentence } from '../../../../utils/lyric';
@@ -86,8 +86,10 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
   /**
    * Sentence content
    */
-  const setEditableSenCont = (ind: number, input: string) => {
-    lyc.editsentence_content(ind, input)
+  const setEditableSenCont = (ind: number, input: any) => {
+    const divele:any=input.target
+    console.log(divele.innerText)
+    lyc.editsentence_content(ind, divele.innerText.trim())
     updateLyc(lyc)
   }
 
@@ -181,15 +183,25 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
               const totime = props.lyc?.senlist[ind]?.start / 100;
               if (totime==0 || totime) { props.song?.seek(totime) } }} /></Tooltip>}
           >
-
-            <TextArea
+            <span contentEditable="true"
+            className='conshow'
+            style={{display:"inline-block",fontSize:'1.2rem',paddingRight:'5px',paddingLeft:'5px'}}
+            // onInput={e=>setEditableSenCont(ind,e)}
+            onBlur={e=>setEditableSenCont(ind,e)}
+            onKeyDown={e=>{if(e.key==="Enter"){
+              e.preventDefault()
+            }}}
+            >
+              {e.content}
+            </span>
+            {/* <TextArea
             onChange={(e) => setEditableSenCont(ind, e.target.value)}
             autoSize
             onPressEnter={()=>oneditover(ind)}
             style={{ fontSize: '1.2rem' }}
             className='conshow'
             value={e.content.length > 0 ? e.content : ""}
-            />
+            /> */}
             <div className='senbuttons hovershow'>
               <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
                 addSentenceAfter(ind)
