@@ -163,9 +163,11 @@ export class Lyric {
     // offset
     /**
      * 传入0.01s为底的时间，然后计算现在offset和用户新设的offset差，平移所有senlist
+     * this.offset每个实例只有一个，代表整体的偏移量
      */
     setoffset=(time:number)=>{
         console.log(time,this.offset)
+        // 只挪移差值，可能会导致句子时间戳变成负数，但是输出的时候会自动修正
         const localoffset=time-this.offset
         this.moveAll(localoffset)
         this.offset=time

@@ -69,6 +69,7 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
   }
   useEffect(() => {
     updateBar()
+    setPlayIcon("pause")
   }, [props.song])
 
   // 拖拽时静音，然后取消拖拽时复原

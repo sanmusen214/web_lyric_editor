@@ -53,6 +53,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
       animate({
         from: document.querySelector("#EditArea")?.scrollTop,
         to: (document.querySelector(".nowplaying") as HTMLDivElement)?.offsetTop - 150,
+        duration: 300,
         onUpdate: latest => document.querySelector("#EditArea")?.scrollTo(0, latest)
       })
     }
