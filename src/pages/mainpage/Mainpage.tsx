@@ -6,6 +6,7 @@ import ToolsArea from './components/ToolsArea/ToolsArea'
 
 import { Lyric } from '../../utils/lyric'
 import { Howl } from 'howler'
+import { message } from 'antd'
 
 export default function Mainpage() {
   const [lyc, setLyc] = useState<Lyric>(new Lyric(false))
@@ -25,6 +26,15 @@ export default function Mainpage() {
     song?.stop()
     setSong(newsong)
   }
+
+  // 上传提示
+  useEffect(()=>{
+    if(loadsongicon){
+      message.loading({content:"Loading Music...",key:"loadsongicon",duration:0})
+    }else{
+      message.destroy("loadsongicon")
+    }
+  },[loadsongicon])
 
   // 如果当前歌词内有东西（避免由useState引起的保存），保存当前歌词到localstorage
   useEffect(() => {

@@ -3,7 +3,7 @@ import "./PlayerArea.css"
 import { Lyric } from '../../../../utils/lyric'
 import { Howl, Howler } from 'howler'
 import { Button, Col, Row, Slider, Spin, message } from 'antd'
-import {PauseOutlined,CaretRightOutlined} from '@ant-design/icons'
+import { PauseOutlined, CaretRightOutlined } from '@ant-design/icons'
 import { fromtimeflag2str } from '../../../../utils/sentenceparse'
 import { Formatter } from 'antd/es/slider'
 import intl from "react-intl-universal"
@@ -11,8 +11,8 @@ import intl from "react-intl-universal"
 type PlayerAreaProps = {
   lyc: Lyric
   setLyc: React.Dispatch<React.SetStateAction<Lyric>>
-  song:Howl|undefined
-  loadsongicon:boolean
+  song: Howl | undefined
+  loadsongicon: boolean
 }
 
 // 发生歌曲时间变化时，先变化时间。然后在渲染时用歌曲现在时间渲染进度条
@@ -39,7 +39,7 @@ const getMusicUIPercent = (e?: React.MouseEvent<HTMLDivElement, MouseEvent>): nu
 /**
  * 改变进度条UI位置,barprecent from 0 to 1
  */
-export const changeBarNow=(barprecent:number)=>{
+export const changeBarNow = (barprecent: number) => {
   const progressnow: HTMLImageElement | null = document.querySelector("#playernow")
   if (progressnow) {
     progressnow.style.width = `${barprecent * 100}%`
@@ -48,95 +48,90 @@ export const changeBarNow=(barprecent:number)=>{
 
 const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
 
-  let [isDrag,setIsDrag] = useState<boolean>(false);
-  let volume:number=0.3;
-  let [playicon,setPlayIcon]=useState<"play"|"pause">("pause")
+  let [isDrag, setIsDrag] = useState<boolean>(false);
+  let [volume, setVolume] = useState<number>(0.3);
+  let [playicon, setPlayIcon] = useState<"play" | "pause">("pause")
 
 
   // 播放完自动暂停自动切换图标
-  props.song?.on("end",()=>{
+  props.song?.on("end", () => {
     setPlayIcon("pause")
   })
 
   // Animation实时改变进度条位置
-  const updateBar=()=>{
-    changeBarNow((props.song?.seek()||0)/(props.song?.duration()||1))
-    const nstr=document.querySelector("#nowtimestr")
-    if(nstr){
-      nstr.innerHTML=fromtimeflag2str((props.song?.seek()||0)*100)
+  const updateBar = () => {
+    changeBarNow((props.song?.seek() || 0) / (props.song?.duration() || 1))
+    const nstr = document.querySelector("#nowtimestr")
+    if (nstr) {
+      nstr.innerHTML = fromtimeflag2str((props.song?.seek() || 0) * 100)
     }
     requestAnimationFrame(updateBar)
   }
-  useEffect(()=>{
+  useEffect(() => {
     updateBar()
-  },[props.song])
+  }, [props.song])
 
   // 拖拽时静音，然后取消拖拽时复原
-  useEffect(()=>{
+  useEffect(() => {
     console.log(isDrag)
-    if(isDrag){
+    if (isDrag) {
       props.song?.volume(0)
-    }else{
+    } else {
       props.song?.volume(volume)
     }
-  },[isDrag])
+  }, [isDrag])
 
   /**
  * 拖进度条后，获取进度百分比，改变音乐时间
  */
   const dragBarNow: React.MouseEventHandler<HTMLDivElement> = (e) => {
     const percent = getMusicUIPercent(e)
-    props.song?.seek(percent*props.song?.duration())
+    props.song?.seek(percent * props.song?.duration())
   }
 
   // 点击播放/暂停按钮
-  const playstopsong=()=>{
-    if(!props.song){
+  const playstopsong = () => {
+    if (!props.song) {
       message.destroy()
       message.warning(intl.get("nomusic-warn"))
       return
     }
     props.song?.volume(volume)
-    if(props.song?.playing()){
+    if (props.song?.playing()) {
       props.song?.pause()
       setPlayIcon("pause")
-    }else{
+    } else {
       props.song?.play()
       setPlayIcon("play")
     }
   }
 
-  const onVolChange=(e:number)=>{
+  const onVolChange = (e: number) => {
+    setVolume(e)
     props.song?.volume(e)
   }
 
-  const sliderformatter:Formatter=(value:number|undefined)=>{
-    return `${Math.floor((value||0)*100)}%`
+  const sliderformatter: Formatter = (value: number | undefined) => {
+    return `${Math.floor((value || 0) * 100)}%`
   }
-
-  const ActiveArea=()=>{
-    return (
-      <>
-      <div id="playerprogress-bar" onMouseDown={(e) => { setIsDrag(true); dragBarNow(e)}}>
-        <div id="playernow"></div>
-      </div>
-      <div id="buttonsArea">
-        <Row align={'middle'} justify={'space-between'}>
-        <span id="nowtimestr"></span>
-        <Button onClick={playstopsong}>{playicon==="play"?<><PauseOutlined /></>:<><CaretRightOutlined /></>}</Button>
-        <Col span={6} style={{marginTop:'3px'}}>{intl.get("volume")}<Slider tooltip={{formatter:sliderformatter}} defaultValue={0.3} step={0.01} max={1.2} onChange={onVolChange}/></Col>
-        </Row>
-      </div>
-      </>)}
 
 
   return (
-    <div id="PlayerArea" onMouseLeave={() => { setIsDrag(false)}} onMouseMove={(e) => { if (isDrag) { dragBarNow(e) } }} onMouseUp={() => { setIsDrag(false)}}>
+    <div id="PlayerArea" onMouseLeave={() => { setIsDrag(false) }} onMouseMove={(e) => { if (isDrag) { dragBarNow(e) } }} onMouseUp={() => { setIsDrag(false) }}>
       <div id="playerprogress">
-        {props.loadsongicon?<Spin>
-      <ActiveArea />
-      </Spin>:<ActiveArea />}
-      
+        <>
+          <div id="playerprogress-bar" onMouseDown={(e) => { setIsDrag(true); dragBarNow(e) }}>
+            <div id="playernow"></div>
+          </div>
+          <div id="buttonsArea">
+            <Row align={'middle'} justify={'space-between'}>
+              <span id="nowtimestr"></span>
+              <Button onClick={playstopsong}>{playicon === "play" ? <><PauseOutlined /></> : <><CaretRightOutlined /></>}</Button>
+              <Col span={6} style={{ marginTop: '3px' }}>{intl.get("volume")}<Slider tooltip={{ formatter: sliderformatter }} value={volume} step={0.01} max={1.2} onChange={onVolChange} /></Col>
+            </Row>
+          </div>
+        </>
+
       </div>
     </div>
   )
