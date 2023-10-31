@@ -92,6 +92,7 @@ const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
   // 点击播放/暂停按钮
   const playstopsong=()=>{
     if(!props.song){
+      message.destroy()
       message.warning(intl.get("nomusic-warn"))
       return
     }

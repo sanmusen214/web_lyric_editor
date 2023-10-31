@@ -22,8 +22,8 @@ export const PopInputArea = (props:PopInputAreaProps) => {
     }
 
   return (<>
-    <TextArea autoSize value={text} onChange={(e)=>setText(e.target.value)}></TextArea>
-    <Button onClick={handleSubmit}>Submit</Button>
+    <TextArea autoSize style={{minHeight:'150px'}} value={text} onChange={(e)=>setText(e.target.value)}></TextArea>
+    <Button onClick={handleSubmit}>确定</Button>
     </>
   )
 }

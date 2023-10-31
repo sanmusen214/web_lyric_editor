@@ -213,7 +213,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
           </Timeline.Item>)
         })}
       </Timeline>
-      <div style={{ height: '100px' }}></div>
+      <div style={{ height: '500px' }}></div>
     </div>
   );
 };

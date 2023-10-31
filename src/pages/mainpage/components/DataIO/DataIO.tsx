@@ -1,4 +1,4 @@
-import React, { ChildContextProvider, useState } from 'react'
+import React, { ChildContextProvider, useEffect, useState } from 'react'
 import { CloudDownloadOutlined, UploadOutlined, FileOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
 import { Col, Drawer, Popconfirm, Row, UploadProps } from 'antd';
 import { Button, message, Upload } from 'antd';
@@ -9,6 +9,7 @@ import "./DataIO.css"
 import { RcFile } from 'antd/es/upload';
 
 import intl from 'react-intl-universal'
+
 
 type DataIOProps = {
     lyc: Lyric
@@ -90,7 +91,6 @@ export default function DataIO(props: DataIOProps) {
 
     }
 
-
     return (<div id="DataIOArea">
         <Col>
             <Row justify={'start'}>
@@ -99,14 +99,25 @@ export default function DataIO(props: DataIOProps) {
                 </Upload>
             </Row>
             <div style={{ 'height': '24px' }}></div>
-            <Row justify={'start'} className='hovershow'>
-                <Upload className='conshow' fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
+            <Row justify={'start'}  onMouseOver={()=>{
+                    document.getElementById("morefunc")?.classList.add("buttonshow");
+                }}
+                onMouseLeave={()=>{
+                    document.getElementById("morefunc")?.classList.remove("buttonshow");
+                }}>
+                <div id="basicfunc">
+                <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
                     <Button style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
                 </Upload>
-                <div style={{ 'width': '4px' }}></div>
-                <Button icon={<CloudDownloadOutlined />} onClick={()=>setDrawopen(true)}>{intl.get("upload-sens")}</Button>
-                <div style={{ 'width': '4px' }}></div>
-                <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button>
+                </div>
+                <Col>
+                <Row id="morefunc" justify={'start'} className='buttonhide'>
+                    <div style={{ 'width': '4px' }}></div>
+                    <Button icon={<CloudDownloadOutlined />} onClick={()=>setDrawopen(true)}>{intl.get("upload-sens")}</Button>
+                    <div style={{ 'width': '4px' }}></div>
+                    <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button>
+                </Row>
+                </Col>
             </Row>
             <div style={{ 'height': '4px' }}></div>
             <Row>
