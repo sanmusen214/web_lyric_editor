@@ -10,16 +10,25 @@ import TestPage from './pages/mainpage/TestPage';
 
 // locale data
 const locales = {
-  "en-US": enUS,
-  "zh-CN": zhCN,
+  "en": enUS,
+  "cn": zhCN,
 };
 
 function App() {
 
-  intl.init({
-    currentLocale:"zh-CN",
-    locales
-  })
+  // 根据浏览器url参数设置语言
+  useEffect(() => {
+    let langtype = intl.determineLocale({
+      urlLocaleKey: "lang"
+    });
+    if (!Object.keys(locales).includes(langtype)) {
+      langtype = "cn";
+    }
+    intl.init({
+      currentLocale: langtype,
+      locales,
+    });
+  }, []);
 
   return (
     <div className="App">

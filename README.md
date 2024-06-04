@@ -1,46 +1,47 @@
-# Getting Started with Create React App
+# Web Lyric Editor
+
+一个所见即所得的在线LRC歌词编辑器
+
+An online LRC lyric editor
+
+[中文界面](https://sanmusen214.github.io/web_lyric_editor?lang=cn)| [English Interface](https://sanmusen214.github.io/web_lyric_editor?lang=en)
+
+## 快捷键
+
+按键|触发所需状态|功能
+-|-|-
+Ctrl + J / Ctrl + ← | 编辑状态 | 歌曲时间倒退三秒
+Ctrl + L / Ctrl + → | 编辑状态 | 歌曲时间前进三秒
+Ctrl + i / Ctrl + ↑ | 编辑状态 | 光标移动至上一句歌词
+Ctrl + K / Ctrl + ↓ | 编辑状态 | 光标移动至下一句歌词
+Ctrl + H | 非编辑状态/编辑状态 | 光标移动至当前歌曲时间所在歌词
+Ctrl + R | 编辑状态 | 更新当前歌词的时间戳为当前歌曲的时间
+Ctrl + F | 编辑状态 | 将当前歌曲时间改为光标所在歌词的时间戳
+
+## Combined keys
+
+Key|Function
+-|-
+Ctrl + J / Ctrl + ← | Go back three seconds
+Ctrl + L / Ctrl + → | Go forward three seconds
+Ctrl + i / Ctrl + ↑ | Move the cursor to the previous line
+Ctrl + K / Ctrl + ↓ | Move the cursor to the next line
+Ctrl + H | Move the cursor to the current time
+Ctrl + R | Update the timestamp of the current lyric to the current time
+Ctrl + F | Change the current song time to the time of the lyric where the cursor is
+
+# Dev
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## `npm start`
 
-In the project directory, you can run:
+启动本地开发服务器
 
-### `yarn start`
+## `npm build`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+打包
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## `npm run deploy`
 
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+部署至github page

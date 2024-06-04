@@ -18,6 +18,12 @@ type EditAreaProps = {
   syncscroll: boolean
 }
 
+declare global {
+  interface Window {
+    nowsenind: any; // 你可以将 'any' 替换为你的实际类型
+  }
+}
+
 const { Text } = Typography;
 
 const EditArea: React.FC<EditAreaProps> = (props) => {
@@ -37,6 +43,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     const nowPlaySec001: number = 100 * (props.song?.seek() || 0)
     const nowPlayingInd: number = props.lyc.getNowLyricIndex(nowPlaySec001)
     setNowind(nowPlayingInd)
+    window.nowsenind = nowPlayingInd
     const errInd: number = props.lyc.checkErrTime()
     setErrind(errInd)
     requestAnimationFrame(updateNowSenUI)
@@ -58,6 +65,16 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
       })
     }
   }, [nowind, props.syncscroll])
+
+  // 绑定快捷键到Ctrl+H
+  useEffect(() => {
+    window.addEventListener('keydown', (e) => {
+        if (e.key.toUpperCase() === "H" && e.ctrlKey) {
+          e.preventDefault()
+          jumpMouseTo(window.nowsenind)
+        }
+    })
+  },[])
 
   /**
    * Info left
@@ -134,6 +151,78 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     }
   }
 
+  // 快捷键相关操作
+  const handleKeyDown = (e: KeyboardEvent, ind:number) => {
+    console.log(e)
+    if(e.key === "Enter"){
+      e.preventDefault()
+    }
+    // 创建并跳转到新的一行
+    if(e.key === "Enter"  && e.ctrlKey){
+      e.preventDefault()
+      addSentenceAfter(ind)
+      // 光标移到新的一行
+      jumpMouseTo(ind+1)
+    }
+    // 光标移到上一行
+    if((e.key.toUpperCase() === "I" || e.key === "ArrowUp")  && e.ctrlKey){
+      e.preventDefault()
+      jumpMouseTo(ind-1)
+    }
+    // 光标移到下一行
+    if((e.key.toUpperCase() === "K" || e.key === "ArrowDown") && e.ctrlKey){
+      e.preventDefault()
+      jumpMouseTo(ind+1)
+    }
+    // 歌曲时间往前移动三秒
+    if((e.key.toUpperCase() === "J" || e.key === "ArrowLeft") && e.ctrlKey){
+      e.preventDefault()
+      props.song?.seek(props.song?.seek()-3)
+    }
+    // 歌曲时间往后移动三秒
+    if((e.key.toUpperCase() === "L" || e.key === "ArrowRight") && e.ctrlKey){
+      e.preventDefault()
+      props.song?.seek(props.song?.seek()+3)
+    }
+    // 更新当前时间戳为现在歌曲时间
+    if(e.key.toUpperCase() === "R" && e.ctrlKey){
+      e.preventDefault()
+      updateTime(ind)
+    }
+    // 更新歌曲时间为当前时间戳
+    if(e.key.toUpperCase() === "F" && e.ctrlKey){
+      e.preventDefault()
+      const totime = props.lyc?.senlist[ind]?.start / 100;
+      if (totime>=0) { props.song?.seek(totime) }
+    }
+    // 空格键播放暂停
+    if(e.key === " " && e.ctrlKey){
+      e.preventDefault()
+      if(props?.song?.playing()){
+        props.song?.pause()
+      }else{
+        props.song?.play()
+      }
+    }
+  }
+
+
+  const jumpMouseTo = (ind: number) => {
+    // 将光标移到新的一行
+    if (ind<0 || ind>=props.lyc.senlist.length) return
+    // 找到第ind个conshow
+    const ele: HTMLElement = document.querySelectorAll('.conshow')[ind] as HTMLElement
+    // 聚焦到最后一个文字
+    ele.focus()
+    const range = document.createRange()
+    range.selectNodeContents(ele)
+    range.collapse(false)
+    const sel = window.getSelection()
+    if(sel?.anchorOffset!=0)return;
+    sel?.removeAllRanges()
+    sel?.addRange(range)
+  }
+
   return (
     <div id="EditArea">
 
@@ -189,9 +278,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
             style={{display:"inline-block",fontSize:'1.2rem',paddingRight:'5px',paddingLeft:'5px'}}
             // onInput={e=>setEditableSenCont(ind,e)}
             onBlur={e=>setEditableSenCont(ind,e)}
-            onKeyDown={e=>{if(e.key==="Enter"){
-              e.preventDefault()
-            }}}
+            onKeyDown={e=>handleKeyDown(e, ind)}
             >
               {e.content}
             </span>

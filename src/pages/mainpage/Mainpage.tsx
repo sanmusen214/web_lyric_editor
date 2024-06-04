@@ -44,6 +44,21 @@ export default function Mainpage() {
     }
   }, [lyc])
 
+  // // Ctrl + H 快捷键，focus当前歌曲时间对应的歌词
+  // const focusNowSen:React.KeyboardEventHandler<HTMLDivElement> = (e) => {
+  //   console.log("Focus", e)
+  //   if (e.key.toUpperCase() === 'H' && e.ctrlKey) {
+  //     e.preventDefault()
+  //     const nowPlaySec001: number = 100 * (song?.seek() || 0)
+  //     const nowPlayingInd: number = lyc.getNowLyricIndex(nowPlaySec001)
+  //     // 将光标移到新的一行
+  //     if (nowPlayingInd<0 || nowPlayingInd>=lyc.senlist.length) return
+  //     // 找到第ind个conshow
+  //     const ele: HTMLElement = document.querySelectorAll('.conshow')[nowPlayingInd] as HTMLElement
+  //     ele.focus()
+  //   }
+  // }
+
   return (
     <div id="MainpageArea">
       <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon}/>
