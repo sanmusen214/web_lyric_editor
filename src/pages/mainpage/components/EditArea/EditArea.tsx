@@ -208,19 +208,22 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
 
 
   const jumpMouseTo = (ind: number) => {
-    // 将光标移到新的一行
-    if (ind<0 || ind>=props.lyc.senlist.length) return
-    // 找到第ind个conshow
-    const ele: HTMLElement = document.querySelectorAll('.conshow')[ind] as HTMLElement
-    // 聚焦到最后一个文字
-    ele.focus()
-    const range = document.createRange()
-    range.selectNodeContents(ele)
-    range.collapse(false)
-    const sel = window.getSelection()
-    if(sel?.anchorOffset!=0)return;
-    sel?.removeAllRanges()
-    sel?.addRange(range)
+    // 等待新增行渲染完成后再聚焦
+    setTimeout(()=>{
+      // 将光标移到新的一行
+      if (ind<0 || ind>=document.querySelectorAll('.conshow').length) return
+      // 找到第ind个conshow
+      const ele: HTMLElement = document.querySelectorAll('.conshow')[ind] as HTMLElement
+      // 聚焦到最后一个文字
+      ele.focus()
+      const range = document.createRange()
+      range.selectNodeContents(ele)
+      range.collapse(false)
+      const sel = window.getSelection()
+      if(sel?.anchorOffset!=0)return;
+      sel?.removeAllRanges()
+      sel?.addRange(range)
+    }, 100)
   }
 
   return (
