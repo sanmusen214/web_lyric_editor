@@ -7,6 +7,7 @@ import ToolsArea from './components/ToolsArea/ToolsArea'
 import { Lyric } from '../../utils/lyric'
 import { Howl } from 'howler'
 import { message } from 'antd'
+import {GithubOutlined} from '@ant-design/icons'
 
 export default function Mainpage() {
   const [lyc, setLyc] = useState<Lyric>(new Lyric(false))
@@ -61,6 +62,9 @@ export default function Mainpage() {
 
   return (
     <div id="MainpageArea">
+      <span style={{position:"fixed", right:3, top:8, cursor:"pointer"}}>
+        <GithubOutlined onClick={()=>{window.open("https://github.com/sanmusen214/web_lyric_editor")}} style={{fontSize: 25}}/>
+      </span>
       <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon}/>
       <DataIO lyc={lyc} setLyc={setLyc} song={song} replaceSong={replaceSong} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon}/>
       <EditArea lyc={lyc} setLyc={setLyc} song={song} syncscroll={syncscroll}/>

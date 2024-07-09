@@ -223,7 +223,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
       if(sel?.anchorOffset!=0)return;
       sel?.removeAllRanges()
       sel?.addRange(range)
-    }, 100)
+    }, 70)
   }
 
   return (

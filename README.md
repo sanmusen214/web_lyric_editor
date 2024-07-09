@@ -17,8 +17,11 @@ Ctrl + K / Ctrl + ↓ | 编辑状态 | 光标移动至下一句歌词
 Ctrl + H | 非编辑状态/编辑状态 | 光标移动至当前歌曲时间所在歌词
 Ctrl + R | 编辑状态 | 更新当前歌词的时间戳为当前歌曲的时间
 Ctrl + F | 编辑状态 | 将当前歌曲时间改为光标所在歌词的时间戳
+Ctrl + Enter(回车) | 编辑状态 | 在当前歌词下一行以当前时间轴插入新歌词
+Ctrl + Space(空格) | 编辑状态 | 播放/暂停歌曲
+Tab | 编辑状态 | 光标移动至下一个输入框
 
-## Combined keys
+## Keys
 
 Key|Function
 -|-
@@ -29,6 +32,9 @@ Ctrl + K / Ctrl + ↓ | Move the cursor to the next line
 Ctrl + H | Move the cursor to the current time
 Ctrl + R | Update the timestamp of the current lyric to the current time
 Ctrl + F | Change the current song time to the time of the lyric where the cursor is
+Ctrl + Enter  | Insert a new lyric at the current time axis below the current lyric
+Ctrl + Space | Play/Pause the song
+Tab | Move the cursor to the next input box
 
 # Dev
 
