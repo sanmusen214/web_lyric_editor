@@ -94,7 +94,7 @@ export default function DataIO(props: DataIOProps) {
     return (<div id="DataIOArea">
         <Col>
             <Row justify={'start'}>
-                <Upload fileList={[]} accept='.mp3,.flac,.mp4,.flv' beforeUpload={uploadmusic}>
+                <Upload fileList={[]} beforeUpload={uploadmusic}>
                     <Button style={props?.song ? {} : { 'color': 'green' }} icon={<UploadOutlined />}>{intl.get("upload-music")}</Button>
                 </Upload>
             </Row>
