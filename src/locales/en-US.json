@@ -18,7 +18,7 @@
 
     "PlayerArea":"Player Area",
     "volume":"volume",
-    "nomusic-warn":"please upload music",
+    "nomusic-warn":"No music uploaded or file type is not supported",
 
     "ToolArea":"Tool Area",
     "offset":"offset",

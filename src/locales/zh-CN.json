@@ -18,7 +18,7 @@
 
     "PlayerArea":"Player Area",
     "volume":"音量",
-    "nomusic-warn":"请上传歌曲",
+    "nomusic-warn":"未上传歌曲或不支持所上传的歌曲格式",
 
     "ToolArea":"Tool Area",
     "offset":"偏移",
