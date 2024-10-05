@@ -9,7 +9,7 @@ import { Sentence, Info } from "./lyric"
 // 信息正则
 const lrcinforeg = /\[(.+):(.+)\]/
 // 歌词正则
-const lrcreg = /\[(\d{2}):(\d{2})\.(\d{2}|\d{3})\](.*)/
+const lrcreg = /\[(\d{2,3}):(\d{2})\.(\d{2}|\d{3})\](.*)/
 
 
 /**
