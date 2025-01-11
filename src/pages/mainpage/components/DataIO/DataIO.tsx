@@ -1,9 +1,9 @@
-import React, { ChildContextProvider, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { CloudDownloadOutlined, UploadOutlined, FileOutlined, VerticalAlignBottomOutlined, CopyOutlined } from '@ant-design/icons';
-import { Col, Drawer, Popconfirm, Row, UploadProps } from 'antd';
+import { Col, Drawer, Popconfirm, Row } from 'antd';
 import { Button, message, Upload } from 'antd';
 import { PopInputArea } from './PopInputArea';
-import { Info, Lyric, Sentence, create_from_LRC } from '../../../../utils/lyric';
+import { Info, Lyric, create_from_LRC } from '../../../../utils/lyric';
 import { Howl } from 'howler'
 import "./DataIO.css"
 import { RcFile } from 'antd/es/upload';
@@ -162,7 +162,7 @@ export default function DataIO(props: DataIOProps) {
                 }}>
                 <div id="basicfunc">
                     <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
-                        <Button style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
+                        <Button style={props?.lyc.senlist.length === 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
                     </Upload>
                 </div>
                 <Col>
@@ -184,7 +184,7 @@ export default function DataIO(props: DataIOProps) {
                     cancelText={intl.get("yes")}
                     placement="topLeft"
                 >
-                    <Button icon={<FileOutlined />} style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}}>{intl.get("create-lyric")}</Button>
+                    <Button icon={<FileOutlined />} style={props?.lyc.senlist.length === 0 ? { 'color': 'green' } : {}}>{intl.get("create-lyric")}</Button>
                 </Popconfirm>
             </Row>
             <div style={{ 'height': '24px' }}></div>

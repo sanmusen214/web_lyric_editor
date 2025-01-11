@@ -1,6 +1,6 @@
-import React, { FormEvent, KeyboardEvent, useEffect, useState } from 'react';
-import { Button, RadioChangeEvent, Row, Tag, Tooltip } from 'antd';
-import { Radio, Timeline, Typography } from 'antd';
+import React, { KeyboardEvent, useEffect, useState } from 'react';
+import { Tag, Tooltip } from 'antd';
+import { Timeline, Typography } from 'antd';
 import { Info, Lyric, Sentence } from '../../../../utils/lyric';
 import { fromtimeflag2str } from '../../../../utils/sentenceparse';
 import "./EditArea.css"
@@ -8,7 +8,6 @@ import { Howl } from 'howler';
 import { animate } from 'popmotion';
 import { RightCircleOutlined } from '@ant-design/icons'
 import intl from "react-intl-universal"
-import TextArea from 'antd/es/input/TextArea';
 
 
 type EditAreaProps = {
@@ -69,12 +68,12 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
   // 绑定快捷键到Ctrl+H
   useEffect(() => {
     window.addEventListener('keydown', (e) => {
-        if (e.key.toUpperCase() === "H" && e.ctrlKey) {
-          e.preventDefault()
-          jumpMouseTo(window.nowsenind)
-        }
+      if (e.key.toUpperCase() === "H" && e.ctrlKey) {
+        e.preventDefault()
+        jumpMouseTo(window.nowsenind)
+      }
     })
-  },[])
+  }, [])
 
   /**
    * Info left
@@ -97,15 +96,15 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
     lyc.editsentence_time(ind, input)
     updateLyc(lyc)
   }
-  const updateTime=(ind:number)=>{
-    lyc.update_time(ind,100*(props.song?.seek()||0))
+  const updateTime = (ind: number) => {
+    lyc.update_time(ind, 100 * (props.song?.seek() || 0))
     updateLyc(lyc)
   }
   /**
    * Sentence content
    */
   const setEditableSenCont = (ind: number, input: any) => {
-    const divele:any=input.target
+    const divele: any = input.target
     console.log(divele.innerText)
     lyc.editsentence_content(ind, divele.innerText.trim())
     updateLyc(lyc)
@@ -152,55 +151,55 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
   }
 
   // 快捷键相关操作
-  const handleKeyDown = (e: KeyboardEvent, ind:number) => {
+  const handleKeyDown = (e: KeyboardEvent, ind: number) => {
     console.log(e)
-    if(e.key === "Enter"){
+    if (e.key === "Enter") {
       e.preventDefault()
     }
     // 创建并跳转到新的一行
-    if(e.key === "Enter"  && e.ctrlKey){
+    if (e.key === "Enter" && e.ctrlKey) {
       e.preventDefault()
       addSentenceAfter(ind)
       // 光标移到新的一行
-      jumpMouseTo(ind+1)
+      jumpMouseTo(ind + 1)
     }
     // 光标移到上一行
-    if((e.key.toUpperCase() === "I" || e.key === "ArrowUp")  && e.ctrlKey){
+    if ((e.key.toUpperCase() === "I" || e.key === "ArrowUp") && e.ctrlKey) {
       e.preventDefault()
-      jumpMouseTo(ind-1)
+      jumpMouseTo(ind - 1)
     }
     // 光标移到下一行
-    if((e.key.toUpperCase() === "K" || e.key === "ArrowDown") && e.ctrlKey){
+    if ((e.key.toUpperCase() === "K" || e.key === "ArrowDown") && e.ctrlKey) {
       e.preventDefault()
-      jumpMouseTo(ind+1)
+      jumpMouseTo(ind + 1)
     }
     // 歌曲时间往前移动三秒
-    if((e.key.toUpperCase() === "J" || e.key === "ArrowLeft") && e.ctrlKey){
+    if ((e.key.toUpperCase() === "J" || e.key === "ArrowLeft") && e.ctrlKey) {
       e.preventDefault()
-      props.song?.seek(props.song?.seek()-3)
+      props.song?.seek(props.song?.seek() - 3)
     }
     // 歌曲时间往后移动三秒
-    if((e.key.toUpperCase() === "L" || e.key === "ArrowRight") && e.ctrlKey){
+    if ((e.key.toUpperCase() === "L" || e.key === "ArrowRight") && e.ctrlKey) {
       e.preventDefault()
-      props.song?.seek(props.song?.seek()+3)
+      props.song?.seek(props.song?.seek() + 3)
     }
     // 更新当前时间戳为现在歌曲时间
-    if(e.key.toUpperCase() === "R" && e.ctrlKey){
+    if (e.key.toUpperCase() === "R" && e.ctrlKey) {
       e.preventDefault()
       updateTime(ind)
     }
     // 更新歌曲时间为当前时间戳
-    if(e.key.toUpperCase() === "F" && e.ctrlKey){
+    if (e.key.toUpperCase() === "F" && e.ctrlKey) {
       e.preventDefault()
       const totime = props.lyc?.senlist[ind]?.start / 100;
-      if (totime>=0) { props.song?.seek(totime) }
+      if (totime >= 0) { props.song?.seek(totime) }
     }
     // 空格键播放暂停
-    if(e.key === " " && e.ctrlKey){
+    if (e.key === " " && e.ctrlKey) {
       e.preventDefault()
-      if(props?.song?.playing()){
+      if (props?.song?.playing()) {
         props.song?.pause()
-      }else{
+      } else {
         props.song?.play()
       }
     }
@@ -209,9 +208,9 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
 
   const jumpMouseTo = (ind: number) => {
     // 等待新增行渲染完成后再聚焦
-    setTimeout(()=>{
+    setTimeout(() => {
       // 将光标移到新的一行
-      if (ind<0 || ind>=document.querySelectorAll('.conshow').length) return
+      if (ind < 0 || ind >= document.querySelectorAll('.conshow').length) return
       // 找到第ind个conshow
       const ele: HTMLElement = document.querySelectorAll('.conshow')[ind] as HTMLElement
       // 聚焦到最后一个文字
@@ -220,7 +219,7 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
       range.selectNodeContents(ele)
       range.collapse(false)
       const sel = window.getSelection()
-      if(sel?.anchorOffset!=0)return;
+      if (sel?.anchorOffset != 0) return;
       sel?.removeAllRanges()
       sel?.addRange(range)
     }, 70)
@@ -265,23 +264,24 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
               <Text style={{ width: '90px', float: "right" }}
                 editable={{ onChange: (words) => setEditableSenTime(ind, words), triggerType: ['text'], enterIcon: null }}
               >{fromtimeflag2str(e.start)}</Text>
-              <div className='hovershow' style={{position:'absolute',right:-10,top:'23px'}}>
+              <div className='hovershow' style={{ position: 'absolute', right: -10, top: '23px' }}>
                 <Tag color={'blue'} style={{ cursor: 'pointer' }} onClick={() => {
                   updateTime(ind)
                 }}>{intl.get("update-timeflag")}</Tag>
               </div>
-              </>
+            </>
             }
-            dot={<Tooltip title={intl.get('jumpto-attention')}><RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => { 
+            dot={<Tooltip title={intl.get('jumpto-attention')}><RightCircleOutlined style={ind == nowind ? { fontSize: '1.5rem', transform: 'translateY(16%)' } : { transform: 'translateY(5%)' }} onClick={() => {
               const totime = props.lyc?.senlist[ind]?.start / 100;
-              if (totime==0 || totime) { props.song?.seek(totime) } }} /></Tooltip>}
+              if (totime == 0 || totime) { props.song?.seek(totime) }
+            }} /></Tooltip>}
           >
             <span contentEditable="true"
-            className='conshow'
-            style={{display:"inline-block",fontSize:'1.2rem',paddingRight:'5px',paddingLeft:'5px'}}
-            // onInput={e=>setEditableSenCont(ind,e)}
-            onBlur={e=>setEditableSenCont(ind,e)}
-            onKeyDown={e=>handleKeyDown(e, ind)}
+              className='conshow'
+              style={{ display: "inline-block", fontSize: '1.2rem', paddingRight: '5px', paddingLeft: '5px' }}
+              // onInput={e=>setEditableSenCont(ind,e)}
+              onBlur={e => setEditableSenCont(ind, e)}
+              onKeyDown={e => handleKeyDown(e, ind)}
             >
               {e.content}
             </span>

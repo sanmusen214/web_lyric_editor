@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import DataIO from './components/DataIO/DataIO'
 import EditArea from './components/EditArea/EditArea'
 import PlayerArea from './components/PlayerArea/PlayerArea'
