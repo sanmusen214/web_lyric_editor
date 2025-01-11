@@ -4,7 +4,7 @@
 
 An online LRC lyric editor
 
-*[**中文界面**](https://lyric-web-editor.wyf9.top?lang=cn) || [**English Interface**](https://lyric-web-editor.wyf9.top?lang=en)*
+*[**中文界面**](https://web-lyric-editor.wyf9.top?lang=cn) || [**English Interface**](https://web-lyric-editor.wyf9.top?lang=en)*
 
 ## Fork
 
