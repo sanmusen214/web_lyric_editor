@@ -1,3 +1,3 @@
-global.userSetting={
-    testset:"testset"
+global.userSetting = {
+    testset: "testset"
 }

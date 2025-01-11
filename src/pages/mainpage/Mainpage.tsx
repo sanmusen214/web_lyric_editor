@@ -7,41 +7,41 @@ import ToolsArea from './components/ToolsArea/ToolsArea'
 import { Lyric } from '../../utils/lyric'
 import { Howl } from 'howler'
 import { message } from 'antd'
-import {GithubOutlined} from '@ant-design/icons'
+import { GithubOutlined } from '@ant-design/icons'
 
 export default function Mainpage() {
   const [lyc, setLyc] = useState<Lyric>(new Lyric(false))
   // replaceSong
-  const [song,setSong] = useState<Howl|undefined>()
-  const [loadsongicon,setLoadsongicon] = useState<boolean>(false)
-  const [syncscroll,setSyncscroll] = useState<boolean>(false)
+  const [song, setSong] = useState<Howl | undefined>()
+  const [loadsongicon, setLoadsongicon] = useState<boolean>(false)
+  const [syncscroll, setSyncscroll] = useState<boolean>(false)
 
 
   // 从localStorage里拿上次歌词
-  useEffect(()=>{
+  useEffect(() => {
     setLyc(new Lyric(true))
-  },[])
+  }, [])
 
   // 上传新歌曲的最后回调
-  function replaceSong(newsong:Howl){
+  function replaceSong(newsong: Howl) {
     song?.stop()
     setSong(newsong)
   }
 
   // 上传提示
-  useEffect(()=>{
-    if(loadsongicon){
-      message.loading({content:"Loading Music...",key:"loadsongicon",duration:0})
-    }else{
+  useEffect(() => {
+    if (loadsongicon) {
+      message.loading({ content: "Loading Music...", key: "loadsongicon", duration: 0 })
+    } else {
       message.destroy("loadsongicon")
     }
-  },[loadsongicon])
+  }, [loadsongicon])
 
   // 如果当前歌词内有东西（避免由useState引起的保存），保存当前歌词到localstorage
   useEffect(() => {
-    if(lyc.senlist.length!==0 || lyc.infolist.length!==0){
-      console.log("Store Newwest lyc: ",lyc)
-      localStorage.setItem("cachelyric",JSON.stringify(lyc.toJSON()))
+    if (lyc.senlist.length !== 0 || lyc.infolist.length !== 0) {
+      console.log("Store Newwest lyc: ", lyc)
+      localStorage.setItem("cachelyric", JSON.stringify(lyc.toJSON()))
     }
   }, [lyc])
 
@@ -62,13 +62,13 @@ export default function Mainpage() {
 
   return (
     <div id="MainpageArea">
-      <span style={{position:"fixed", right:3, top:8, cursor:"pointer"}}>
-        <GithubOutlined onClick={()=>{window.open("https://github.com/sanmusen214/web_lyric_editor")}} style={{fontSize: 25}}/>
+      <span style={{ position: "fixed", right: 3, top: 8, cursor: "pointer" }}>
+        <GithubOutlined onClick={() => { window.open("https://github.com/wyf9/web_lyric_editor") }} style={{ fontSize: 25 }} />
       </span>
-      <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon}/>
-      <DataIO lyc={lyc} setLyc={setLyc} song={song} replaceSong={replaceSong} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon}/>
-      <EditArea lyc={lyc} setLyc={setLyc} song={song} syncscroll={syncscroll}/>
-      <ToolsArea lyc={lyc} song={song} setLyc={setLyc} syncscroll={syncscroll} setSyncscroll={setSyncscroll}/>
+      <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon} />
+      <DataIO lyc={lyc} setLyc={setLyc} song={song} replaceSong={replaceSong} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon} />
+      <EditArea lyc={lyc} setLyc={setLyc} song={song} syncscroll={syncscroll} />
+      <ToolsArea lyc={lyc} song={song} setLyc={setLyc} syncscroll={syncscroll} setSyncscroll={setSyncscroll} />
     </div>
   )
 }

@@ -1,5 +1,15 @@
 # Web Lyric Editor
 
+## Fork
+
+Fork, 进行了一些修改:
+
+
+
+> 以下为 README 原文内容.
+
+---
+
 一个所见即所得的在线LRC歌词编辑器
 
 An online LRC lyric editor
