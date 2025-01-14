@@ -23,6 +23,7 @@ type DataIOProps = {
 export default function DataIO(props: DataIOProps) {
 
     const [drawopen,setDrawopen]=useState<boolean>(false)
+    const [uploadedFileName, setUploadedFileName] = useState<string>("")
 
     function uploadlyric(file: RcFile) {
         const reader = new FileReader();
@@ -35,6 +36,11 @@ export default function DataIO(props: DataIOProps) {
     }
 
     function uploadmusic(file: RcFile) {
+        let fileNameSplit = file.name.split(".")
+        // 删掉文件名后缀
+        fileNameSplit.pop()
+        setUploadedFileName(fileNameSplit.join("."))
+
         const reader = new FileReader();
         props.setLoadsongicon(true)
         reader.addEventListener('load', () => {
@@ -87,7 +93,7 @@ export default function DataIO(props: DataIOProps) {
         // 设置文件的下载地址
         aTag.href = objectURL
         // 设置保存后的文件名称
-        aTag.download = "yourlrc.lrc"
+        aTag.download = (uploadedFileName || "yourlrc") + ".lrc"
         // 给 a 标签添加点击事件
         aTag.click()
         // 释放一个之前已经存在的、通过调用 URL.createObjectURL() 创建的 URL 对象。
@@ -103,7 +109,8 @@ export default function DataIO(props: DataIOProps) {
                     <Button style={props?.song ? {} : { 'color': 'green' }} icon={<UploadOutlined />}>{intl.get("upload-music")}</Button>
                 </Upload>
             </Row>
-            <div style={{ 'height': '24px' }}></div>
+            {/* 文字超过10个自动缩略 */}
+            <div style={{ 'height': '24px', 'width': '8em', 'overflow': 'hidden', 'textOverflow': 'ellipsis','whiteSpace': 'nowrap'}}>{uploadedFileName}</div>
             <Row justify={'start'}>
                 <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
                     <Button style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
