@@ -77,7 +77,36 @@ export class Lyric {
             res+=`[${info.sub}:${info.obj}]\n`
         }
         for(let sen of this.senlist){
-            res+=`${fromtimeflag2str(sen.start)}${sen.content}\n`
+            res+=`${fromtimeflag2str(sen.start)} ${sen.content.trim()}\n`
+        }
+        return res
+    }
+
+    toTwinLyc=():string=>{
+        const splitstr="|"
+        // 将一句话按照双空格分成两句，用两次for循环，分别添加前 和 后 两个部分，这两个部分使用相同的时间戳
+        let res=""
+        for (let info of this.infolist){
+            res+=`[${info.sub}:${info.obj}]\n`
+        }
+        // 第一次循环，添加前一句
+        for(let sen of this.senlist){
+            res+=`${fromtimeflag2str(sen.start)} ${sen.content.split(splitstr)[0].trim()}\n`
+        }
+
+        // 第二次循环，添加后一句
+        for(let sen of this.senlist){
+            // 如果是最后一句且为空，添加一个时间戳结束
+            if(sen.content.trim()=="" && sen==this.senlist[this.senlist.length-1]){
+                res += `${fromtimeflag2str(sen.start)}\n`;
+                break;
+            }
+            
+            let temp=sen.content.split(splitstr);
+            if (temp.length > 1){
+                // 分割后第二部分不为空
+                res+=`${fromtimeflag2str(sen.start)} ${temp[1].trim()}\n`;
+            }
         }
         return res
     }

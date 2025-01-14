@@ -67,9 +67,14 @@ export default function DataIO(props: DataIOProps) {
 
     }
 
-    const downloadLyc = () => {
-        // 要保存的字符串
-        const stringData = props.lyc.toLyc()
+    const downloadLyc = (twin:boolean) => {
+        let stringData;
+        if (twin === false){
+            // 要保存的字符串
+            stringData = props.lyc.toLyc()
+        }else{
+            stringData = props.lyc.toTwinLyc()
+        }
         // dada 表示要转换的字符串数据，type 表示要转换的数据格式
         const blob = new Blob([stringData], {
             type: "text/plain;charset=utf-8"
@@ -99,25 +104,15 @@ export default function DataIO(props: DataIOProps) {
                 </Upload>
             </Row>
             <div style={{ 'height': '24px' }}></div>
-            <Row justify={'start'}  onMouseOver={()=>{
-                    document.getElementById("morefunc")?.classList.add("buttonshow");
-                }}
-                onMouseLeave={()=>{
-                    document.getElementById("morefunc")?.classList.remove("buttonshow");
-                }}>
-                <div id="basicfunc">
+            <Row justify={'start'}>
                 <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
                     <Button style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
                 </Upload>
-                </div>
-                <Col>
-                <Row id="morefunc" justify={'start'} className='buttonhide'>
-                    <div style={{ 'width': '4px' }}></div>
-                    <Button icon={<CloudDownloadOutlined />} onClick={()=>setDrawopen(true)}>{intl.get("upload-sens")}</Button>
-                    <div style={{ 'width': '4px' }}></div>
-                    <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button>
-                </Row>
-                </Col>
+                <div style={{ 'width': '4px' }}></div>
+                <Button icon={<CloudDownloadOutlined />} onClick={()=>setDrawopen(true)}>{intl.get("upload-sens")}</Button>
+                <div style={{ 'width': '4px' }}></div>
+                <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button>
+
             </Row>
             <div style={{ 'height': '4px' }}></div>
             <Row>
@@ -134,7 +129,8 @@ export default function DataIO(props: DataIOProps) {
             </Row>
             <div style={{ 'height': '24px' }}></div>
             <Row justify={'start'}>
-                <Button icon={<VerticalAlignBottomOutlined />} onClick={downloadLyc}>{intl.get("download-lyric")}</Button>
+                <Button icon={<VerticalAlignBottomOutlined />} onClick={()=>downloadLyc(false)}>{intl.get("download-lyric")}</Button>
+                <Button icon={<VerticalAlignBottomOutlined />} onClick={()=>downloadLyc(true)}>{intl.get("download-lyric-twin")}</Button>
             </Row>
         </Col>
         <Drawer 
