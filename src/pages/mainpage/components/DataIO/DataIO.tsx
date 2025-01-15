@@ -25,6 +25,9 @@ export default function DataIO(props: DataIOProps) {
     const [drawopen,setDrawopen]=useState<boolean>(false)
     const [uploadedFileName, setUploadedFileName] = useState<string>("")
 
+    const [showUploadButtons, setShowUploadButtons] = useState<boolean>(false)
+    const [showDownloadButtons, setShowDownloadButtons] = useState<boolean>(false)
+
     function uploadlyric(file: RcFile) {
         const reader = new FileReader();
         reader.addEventListener('load', () => {
@@ -111,14 +114,18 @@ export default function DataIO(props: DataIOProps) {
             </Row>
             {/* 文字超过10个自动缩略 */}
             <div style={{ 'height': '24px', 'width': '8em', 'overflow': 'hidden', 'textOverflow': 'ellipsis','whiteSpace': 'nowrap'}}>{uploadedFileName}</div>
-            <Row justify={'start'}>
+            <Row justify={'start'} 
+            onMouseEnter={()=>setShowUploadButtons(true)}
+            onMouseLeave={()=>setShowUploadButtons(false)}
+            >
                 <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
                     <Button style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
                 </Upload>
-                <div style={{ 'width': '4px' }}></div>
+                {showUploadButtons ? <><div style={{ 'width': '4px' }}></div>
                 <Button icon={<CloudDownloadOutlined />} onClick={()=>setDrawopen(true)}>{intl.get("upload-sens")}</Button>
                 <div style={{ 'width': '4px' }}></div>
-                <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button>
+                <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button></>:<></>}
+                
 
             </Row>
             <div style={{ 'height': '4px' }}></div>
@@ -135,9 +142,13 @@ export default function DataIO(props: DataIOProps) {
                 </Popconfirm>
             </Row>
             <div style={{ 'height': '24px' }}></div>
-            <Row justify={'start'}>
+            <Row justify={'start'} 
+            onMouseEnter={()=>setShowDownloadButtons(true)}
+            onMouseLeave={()=>setShowDownloadButtons(false)}
+            >
                 <Button icon={<VerticalAlignBottomOutlined />} onClick={()=>downloadLyc(false)}>{intl.get("download-lyric")}</Button>
-                <Button icon={<VerticalAlignBottomOutlined />} onClick={()=>downloadLyc(true)}>{intl.get("download-lyric-twin")}</Button>
+                {showDownloadButtons ? <><div style={{ 'width': '4px' }}></div><Button icon={<VerticalAlignBottomOutlined />} onClick={()=>downloadLyc(true)}>{intl.get("download-lyric-twin")}</Button></>:<></>}
+                
             </Row>
         </Col>
         <Drawer 
