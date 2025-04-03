@@ -241,13 +241,30 @@ export class Lyric {
     }
 
     /**
-         * 添加一个健全的sentence.ind=-1插入最新,否则插在ind后面
+         * 添加一个健全的sentence.
+         * 
+         * @param ind -1插入最新； -2检测并合并到已有相同时间戳的那一句（双语LRC解析），通过 | 连接文本；否则插在ind后面
+         * @param sen - 句子对象
          */
     addsentence = (ind: number, sen: Sentence) => {
         sen.start=Math.floor(sen.start)
         if (ind == -1 || ind==this.senlist.length-1) {
             this.senlist.push(sen)
-        } else {
+        } else if(ind == -2){
+            // 检测是否已有相同时间戳的句子
+            // 如果有，则合并。否则插入最后
+            let has=false
+            for(let i=0;i<this.senlist.length;i++){
+                if(this.senlist[i].start==sen.start){
+                    this.senlist[i].content+=` | ${sen.content}`
+                    has=true
+                    break
+                }
+            }
+            if(!has){
+                this.senlist.push(sen)
+            }
+        }else {
             this.senlist.splice(ind+1, 0, sen)
         }
 
@@ -300,7 +317,12 @@ export class Lyric {
 
 }
 
-
+/**
+ * 从LRC文本中解析，如果前后遇到两个相同的时间戳，则找到同时间戳并使用 | 连接
+ * 
+ * @param input 
+ * @returns 
+ */
 export const create_from_LRC = (input: string): Lyric => {
     const lyricobj = new Lyric(false)
     const sentences = (input + "").split("\n")
@@ -308,7 +330,7 @@ export const create_from_LRC = (input: string): Lyric => {
         const sentenceparse
             = fromLRCtime2flag(sentences[i].trim())
         if (sentenceparse.type == "sentence") {
-            lyricobj.addsentence(-1, sentenceparse.sen)
+            lyricobj.addsentence(-2, sentenceparse.sen)
         } else if (sentenceparse.type == "info") {
             lyricobj.addinfo(-1, sentenceparse.info)
         }
