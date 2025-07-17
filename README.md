@@ -13,6 +13,12 @@ Fork, 进行了一些修改:
 - 增加复制歌词功能 / Add `copy lyric` button
 - 部署到 GitHub Pages + Cloudflare CDN
 
+## 双语LRC
+
+你可以在歌词中使用 `|` 来划分原文以及翻译，随后下载时使用 `下载歌词(双语)` 按钮下载可以双行显示的LRC歌词
+
+如果使用双语LRC，则末行必须是空行
+
 ## 快捷键
 
 | 按键                | 触发所需状态        | 功能                                   |
@@ -27,6 +33,12 @@ Fork, 进行了一些修改:
 | Ctrl + Enter(回车)  | 编辑状态            | 在当前歌词下一行以当前时间轴插入新歌词 |
 | Ctrl + Space(空格)  | 编辑状态            | 播放/暂停歌曲                          |
 | Tab                 | 编辑状态            | 光标移动至下一个输入框                 |
+
+## Twin LRC
+
+You can use `|` to split raw text and translated, and press `download lyric(twin)` button to download LRC lyric that contains two lines on one timestamp.
+
+If use twin lrc, the last line must be blank.
 
 ## Keys
 
