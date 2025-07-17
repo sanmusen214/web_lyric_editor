@@ -63,7 +63,7 @@ export default function Mainpage() {
   return (
     <div id="MainpageArea">
       <span style={{ position: "fixed", right: 3, top: 8, cursor: "pointer" }}>
-        <GithubOutlined onClick={() => { window.open("https://github.com/wyf9/web_lyric_editor") }} style={{ fontSize: 25 }} />
+        <GithubOutlined onClick={() => { window.open("https://github.com/sanmusen214/web_lyric_editor") }} style={{ fontSize: 25 }} />
       </span>
       <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon} />
       <DataIO lyc={lyc} setLyc={setLyc} song={song} replaceSong={replaceSong} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon} />

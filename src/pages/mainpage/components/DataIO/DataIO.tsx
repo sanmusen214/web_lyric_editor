@@ -84,7 +84,7 @@ export default function DataIO(props: DataIOProps) {
         } else {
             stringData = props.lyc.toTwinLyc()
         }
-        // dada 表示要转换的字符串数据，type 表示要转换的数据格式
+        // data 表示要转换的字符串数据，type 表示要转换的数据格式
         const blob = new Blob([stringData], {
             type: "text/plain;charset=utf-8"
         })

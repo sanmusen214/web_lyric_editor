@@ -6,13 +6,6 @@ An online LRC lyric editor
 
 *[**中文界面**](https://web-lyric-editor.wyf9.top?lang=cn) || [**English Interface**](https://web-lyric-editor.wyf9.top?lang=en)*
 
-## Fork
-
-Fork, 进行了一些修改:
-
-- 增加复制歌词功能 / Add `copy lyric` button
-- 部署到 GitHub Pages + Cloudflare CDN
-
 ## 双语LRC
 
 你可以在歌词中使用 `|` 来划分原文以及翻译，随后下载时使用 `下载歌词(双语)` 按钮下载可以双行显示的LRC歌词
@@ -55,9 +48,9 @@ If use twin lrc, the last line must be blank.
 | Ctrl + Space        | Play/Pause the song                                                       |
 | Tab                 | Move the cursor to the next input box                                     |
 
-# Dev
+# 开发
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+本项目由 [Create React App](https://github.com/facebook/create-react-app) 创建.
 
 ## `npm start`
 
@@ -65,10 +58,34 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## `npm build`
 
-打包
+> *等同于 `npm run predeploy`*
+
+打包项目
 
 ## `npm run deploy`
 
 部署至 GitHub Pages
 
-> 使用 `gh-pages -d build`, 须先安装相应工具
+> 使用 `gh-pages -d build`, 须先安装相应工具 <br/>
+> 更建议使用 actions 自动部署
+
+# Dev
+
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+
+## `npm start`
+
+Start local development server
+
+## `npm build`
+
+> *等同于 `npm run predeploy`*
+
+Build project
+
+## `npm run deploy`
+
+Deploy project to GitHub Pages
+
+> Depends on `gh-pages -d build`, install it first <br/>
+> Recommended to use GitHub Actions deploy

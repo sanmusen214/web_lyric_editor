@@ -1,8 +1,10 @@
 {
   "homepage": "https://web-lyric-editor.wyf9.top",
+  "bugs": {"url": "https://github.com/sanmusen214/web_lyric_editor/issues/new/choose"},
+  "repository": {"type": "github", "url": "https://github.com/sanmusen214/web_lyric_editor"},
   "name": "onelyriceditor",
   "version": "0.2.0",
-  "maintainers": [
+  "contributors": [
     {
       "name": "sanmusen214",
       "url": "https://github.com/sanmusen214"
