@@ -77,7 +77,36 @@ export class Lyric {
             res+=`[${info.sub}:${info.obj}]\n`
         }
         for(let sen of this.senlist){
-            res+=`${fromtimeflag2str(sen.start)}${sen.content}\n`
+            res+=`${fromtimeflag2str(sen.start)} ${sen.content.trim()}\n`
+        }
+        return res
+    }
+
+    toTwinLyc=():string=>{
+        const splitstr="|"
+        // 将一句话按照双空格分成两句，用两次for循环，分别添加前 和 后 两个部分，这两个部分使用相同的时间戳
+        let res=""
+        for (let info of this.infolist){
+            res+=`[${info.sub}:${info.obj}]\n`
+        }
+        // 第一次循环，添加前一句
+        for(let sen of this.senlist){
+            res+=`${fromtimeflag2str(sen.start)} ${sen.content.split(splitstr)[0].trim()}\n`
+        }
+
+        // 第二次循环，添加后一句
+        for(let sen of this.senlist){
+            // 如果是最后一句且为空，添加一个时间戳结束
+            if(sen.content.trim()=="" && sen==this.senlist[this.senlist.length-1]){
+                res += `${fromtimeflag2str(sen.start)}\n`;
+                break;
+            }
+            
+            let temp=sen.content.split(splitstr);
+            if (temp.length > 1){
+                // 分割后第二部分不为空
+                res+=`${fromtimeflag2str(sen.start)} ${temp[1].trim()}\n`;
+            }
         }
         return res
     }
@@ -212,13 +241,30 @@ export class Lyric {
     }
 
     /**
-         * 添加一个健全的sentence.ind=-1插入最新,否则插在ind后面
+         * 添加一个健全的sentence.
+         * 
+         * @param ind -1插入最新； -2检测并合并到已有相同时间戳的那一句（双语LRC解析），通过 | 连接文本；否则插在ind后面
+         * @param sen - 句子对象
          */
     addsentence = (ind: number, sen: Sentence) => {
         sen.start=Math.floor(sen.start)
         if (ind == -1 || ind==this.senlist.length-1) {
             this.senlist.push(sen)
-        } else {
+        } else if(ind == -2){
+            // 检测是否已有相同时间戳的句子
+            // 如果有，则合并。否则插入最后
+            let has=false
+            for(let i=0;i<this.senlist.length;i++){
+                if(this.senlist[i].start==sen.start){
+                    this.senlist[i].content+=` | ${sen.content}`
+                    has=true
+                    break
+                }
+            }
+            if(!has){
+                this.senlist.push(sen)
+            }
+        }else {
             this.senlist.splice(ind+1, 0, sen)
         }
 
@@ -271,7 +317,12 @@ export class Lyric {
 
 }
 
-
+/**
+ * 从LRC文本中解析，如果前后遇到两个相同的时间戳，则找到同时间戳并使用 | 连接
+ * 
+ * @param input 
+ * @returns 
+ */
 export const create_from_LRC = (input: string): Lyric => {
     const lyricobj = new Lyric(false)
     const sentences = (input + "").split("\n")
@@ -279,7 +330,7 @@ export const create_from_LRC = (input: string): Lyric => {
         const sentenceparse
             = fromLRCtime2flag(sentences[i].trim())
         if (sentenceparse.type == "sentence") {
-            lyricobj.addsentence(-1, sentenceparse.sen)
+            lyricobj.addsentence(-2, sentenceparse.sen)
         } else if (sentenceparse.type == "info") {
             lyricobj.addinfo(-1, sentenceparse.info)
         }

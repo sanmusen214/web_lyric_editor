@@ -1,15 +1,14 @@
 import React, { useState } from 'react'
 import { CloudDownloadOutlined, UploadOutlined, FileOutlined, VerticalAlignBottomOutlined, CopyOutlined } from '@ant-design/icons';
-import { Col, Drawer, Popconfirm, Row } from 'antd';
+import { Col, Popconfirm, Row } from 'antd';
+import Drawer from 'antd/es/drawer';
 import { Button, message, Upload } from 'antd';
 import { PopInputArea } from './PopInputArea';
 import { Info, Lyric, create_from_LRC } from '../../../../utils/lyric';
 import { Howl } from 'howler'
 import "./DataIO.css"
 import { RcFile } from 'antd/es/upload';
-
 import intl from 'react-intl-universal'
-
 
 type DataIOProps = {
     lyc: Lyric
@@ -23,6 +22,11 @@ type DataIOProps = {
 export default function DataIO(props: DataIOProps) {
 
     const [drawopen, setDrawopen] = useState<boolean>(false)
+    const [uploadedFileName, setUploadedFileName] = useState<string>("")
+
+    const [showUploadButtons, setShowUploadButtons] = useState<boolean>(false)
+    const [showDownloadButtons, setShowDownloadButtons] = useState<boolean>(false)
+    const [showCopyButtons, setShowCopyButtons] = useState<boolean>(false)
 
     function uploadlyric(file: RcFile) {
         const reader = new FileReader();
@@ -35,6 +39,11 @@ export default function DataIO(props: DataIOProps) {
     }
 
     function uploadmusic(file: RcFile) {
+        let fileNameSplit = file.name.split(".")
+        // 删掉文件名后缀
+        fileNameSplit.pop()
+        setUploadedFileName(fileNameSplit.join("."))
+
         const reader = new FileReader();
         props.setLoadsongicon(true)
         reader.addEventListener('load', () => {
@@ -67,9 +76,14 @@ export default function DataIO(props: DataIOProps) {
 
     }
 
-    const downloadLyc = () => {
-        // 要保存的字符串
-        const stringData = props.lyc.toLyc()
+    const downloadLyc = (twin: boolean) => {
+        let stringData;
+        if (twin === false) {
+            // 要保存的字符串
+            stringData = props.lyc.toLyc()
+        } else {
+            stringData = props.lyc.toTwinLyc()
+        }
         // dada 表示要转换的字符串数据，type 表示要转换的数据格式
         const blob = new Blob([stringData], {
             type: "text/plain;charset=utf-8"
@@ -82,7 +96,7 @@ export default function DataIO(props: DataIOProps) {
         // 设置文件的下载地址
         aTag.href = objectURL
         // 设置保存后的文件名称
-        aTag.download = "yourlrc.lrc"
+        aTag.download = (uploadedFileName || "yourlrc") + ".lrc"
         // 给 a 标签添加点击事件
         aTag.click()
         // 释放一个之前已经存在的、通过调用 URL.createObjectURL() 创建的 URL 对象。
@@ -137,8 +151,14 @@ export default function DataIO(props: DataIOProps) {
         }
     }
 
-    const copyLyc = () => {
-        const stringData = props.lyc.toLyc()
+    const copyLyc = (twin: boolean) => {
+        let stringData;
+        if (twin === false) {
+            // 要保存的字符串
+            stringData = props.lyc.toLyc()
+        } else {
+            stringData = props.lyc.toTwinLyc()
+        }
         copyToClipboard(stringData).then(() => {
             message.success(intl.get("copy-success"))
         }).catch(() => {
@@ -153,26 +173,21 @@ export default function DataIO(props: DataIOProps) {
                     <Button style={props?.song ? {} : { 'color': 'green' }} icon={<UploadOutlined />}>{intl.get("upload-music")}</Button>
                 </Upload>
             </Row>
-            <div style={{ 'height': '24px' }}></div>
-            <Row justify={'start'} onMouseOver={() => {
-                document.getElementById("morefunc")?.classList.add("buttonshow");
-            }}
-                onMouseLeave={() => {
-                    document.getElementById("morefunc")?.classList.remove("buttonshow");
-                }}>
-                <div id="basicfunc">
-                    <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
-                        <Button style={props?.lyc.senlist.length === 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
-                    </Upload>
-                </div>
-                <Col>
-                    <Row id="morefunc" justify={'start'} className='buttonhide'>
-                        <div style={{ 'width': '4px' }}></div>
-                        <Button icon={<CloudDownloadOutlined />} onClick={() => setDrawopen(true)}>{intl.get("upload-sens")}</Button>
-                        <div style={{ 'width': '4px' }}></div>
-                        <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button>
-                    </Row>
-                </Col>
+            {/* 文字超过10个自动缩略 */}
+            <div style={{ 'height': '24px', 'width': '8em', 'overflow': 'hidden', 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap' }}>{uploadedFileName}</div>
+            <Row justify={'start'}
+                onMouseEnter={() => setShowUploadButtons(true)}
+                onMouseLeave={() => setShowUploadButtons(false)}
+            >
+                <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
+                    <Button style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
+                </Upload>
+                {showUploadButtons ? <><div style={{ 'width': '4px' }}></div>
+                    <Button icon={<CloudDownloadOutlined />} onClick={() => setDrawopen(true)}>{intl.get("upload-sens")}</Button>
+                    <div style={{ 'width': '4px' }}></div>
+                    <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button></> : <></>}
+
+
             </Row>
             <div style={{ 'height': '4px' }}></div>
             <Row>
@@ -188,14 +203,57 @@ export default function DataIO(props: DataIOProps) {
                 </Popconfirm>
             </Row>
             <div style={{ 'height': '24px' }}></div>
-            <Row justify={'start'}>
-                <Button icon={<VerticalAlignBottomOutlined />} onClick={downloadLyc}>{intl.get("download-lyric")}</Button>
+            <Row justify={'start'}
+                onMouseEnter={() => setShowDownloadButtons(true)}
+                onMouseLeave={() => setShowDownloadButtons(false)}
+            >
+                <Button
+                    icon={<VerticalAlignBottomOutlined />}
+                    onClick={() => downloadLyc(false)}
+                >
+                    {intl.get("download-lyric")}
+                </Button>
+
+                {showDownloadButtons && (
+                    <>
+                        <div style={{ 'width': '4px' }}></div>
+                        <Button
+                            icon={<VerticalAlignBottomOutlined />}
+                            onClick={() => downloadLyc(true)}
+                        >
+                            {intl.get("download-lyric-twin")}
+                        </Button>
+                    </>
+                )}
             </Row>
+
             <div style={{ 'height': '4px' }}></div>
-            <Row justify={'start'}>
-                <Button icon={<CopyOutlined />} onClick={copyLyc}>{intl.get("copy-lyric")}</Button>
+
+            <Row justify={'start'}
+                onMouseEnter={() => setShowCopyButtons(true)}
+                onMouseLeave={() => setShowCopyButtons(false)}
+            >
+                <Button
+                    icon={<CopyOutlined />}
+                    onClick={() => copyLyc(false)}
+                >
+                    {intl.get("copy-lyric")}
+                </Button>
+
+                {showCopyButtons && (
+                    <>
+                        <div style={{ 'width': '4px' }}></div>
+                        <Button
+                            icon={<CopyOutlined />}
+                            onClick={() => copyLyc(true)}
+                        >
+                            {intl.get("copy-lyric-twin")}
+                        </Button>
+                    </>
+                )}
             </Row>
         </Col>
+
         <Drawer
             title={intl.get("upload-sens")}
             onClose={() => setDrawopen(false)}
@@ -204,6 +262,5 @@ export default function DataIO(props: DataIOProps) {
         >
             <PopInputArea drawopen={drawopen} setLyc={props.setLyc} />
         </Drawer>
-
     </div>)
 }

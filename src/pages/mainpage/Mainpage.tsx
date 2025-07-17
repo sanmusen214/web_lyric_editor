@@ -31,9 +31,9 @@ export default function Mainpage() {
   // 上传提示
   useEffect(() => {
     if (loadsongicon) {
-      message.loading({ content: "Loading Music...", key: "loadsongicon", duration: 0 })
+      message.loading("Loading Music...", 0)
     } else {
-      message.destroy("loadsongicon")
+      message.destroy()
     }
   }, [loadsongicon])
 
