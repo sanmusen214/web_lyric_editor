@@ -297,7 +297,7 @@ export class Lyric {
     /**
          * 添加一个健全的sentence.
          * 
-         * @param ind -1插入最新； -2检测并合并到已有相同时间戳的那一句（双语LRC解析），通过 | 连接文本；否则插在ind后面
+         * @param ind ind >= -2 如果是 -1插入最新； -2检测并合并到已有相同时间戳的那一句（双语LRC解析），通过 | 连接文本；否则插在ind后面
          * @param sen - 句子对象
          */
     addsentence = (ind: number, sen: Sentence) => {
@@ -322,6 +322,15 @@ export class Lyric {
             this.senlist.splice(ind+1, 0, sen)
         }
 
+    }
+
+    /**
+     * 如果最后一句歌词只有 | 分隔符，替换为空字符串
+     */
+    clear_tail = () =>{
+        if (this.senlist[this.senlist.length - 1].content.trim() == "|"){
+            this.senlist[this.senlist.length - 1].content = ""
+        }
     }
 
     /**
@@ -389,6 +398,7 @@ export const create_from_LRC = (input: string): Lyric => {
             lyricobj.addinfo(-1, sentenceparse.info)
         }
     }
+    lyricobj.clear_tail()
     return lyricobj
 }
 
