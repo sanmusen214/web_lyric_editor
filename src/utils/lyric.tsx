@@ -14,6 +14,63 @@ type lycobj={
     infolist?:Array<infoobj>
     senlist?:Array<senobj>
 }
+
+/**
+ * 将str按照首次出现的 | 分成左右两部分，略过 \|
+ * 
+ * @param str 
+ * @returns 
+ */
+function processTwinPipeString(str:string) {
+    let result = '';
+    let firstPipeIndex = -1;
+    let foundFirstPipe = false;
+    let indreduced = 0;
+    
+    for (let i = 0; i < str.length; i++) {
+        const currentChar = str[i];
+        const prevChar = i > 0 ? str[i - 1] : '';
+        
+        // 处理转义的竖线 \|
+        if (currentChar === '\\' && i + 1 < str.length && str[i + 1] === '|') {
+            result += '|';
+            indreduced += 1;
+            i++; // 跳过下一个字符（竖线）
+            continue;
+        }
+        
+        // 查找第一个非转义的竖线
+        if (currentChar === '|' && prevChar !== '\\' && !foundFirstPipe) {
+            firstPipeIndex = indreduced;
+            foundFirstPipe = true;
+        }
+        
+        result += currentChar;
+        indreduced += 1;
+    }
+    
+    // 切割
+    let leftPart = '';
+    let rightPart = '';
+    
+    if (firstPipeIndex >= 0 && firstPipeIndex < result.length) {
+        leftPart = result.substring(0, firstPipeIndex);
+        rightPart = result.substring(firstPipeIndex + 1);
+    } else {
+        // 处理下标越界的情况
+        leftPart = result;
+        rightPart = '';
+    }
+
+    return {
+        processedString: result,
+        foundFirstPipe: foundFirstPipe,
+        firstPipeIndex: firstPipeIndex,
+        leftPart: leftPart.trim(),
+        rightPart: rightPart.trim()
+    };
+}
+
 export class Info {
     sub: string
     obj: string
@@ -83,29 +140,26 @@ export class Lyric {
     }
 
     toTwinLyc=():string=>{
-        const splitstr="|"
-        // 将一句话按照双空格分成两句，用两次for循环，分别添加前 和 后 两个部分，这两个部分使用相同的时间戳
+        // 将一句话按照双空格分成两句，用两次for循环，分别添加左 和 右 两个部分，这两个部分使用相同的时间戳
         let res=""
         for (let info of this.infolist){
             res+=`[${info.sub}:${info.obj}]\n`
         }
-        // 第一次循环，添加前一句
+        // 第一次循环，添加左半句
         for(let sen of this.senlist){
-            res+=`${fromtimeflag2str(sen.start)} ${sen.content.split(splitstr)[0].trim()}\n`
+            // 找到无转义的分隔符
+            let findPipeRes = processTwinPipeString(sen.content)
+            res+=`${fromtimeflag2str(sen.start)} ${findPipeRes.leftPart}\n`
         }
 
-        // 第二次循环，添加后一句
-        for(let sen of this.senlist){
-            // 如果是最后一句且为空，添加一个时间戳结束
-            if(sen.content.trim()=="" && sen==this.senlist[this.senlist.length-1]){
-                res += `${fromtimeflag2str(sen.start)}\n`;
-                break;
-            }
+        // 第二次循环，添加右半句
+        for(let i=0; i<this.senlist.length;i++){
+            let sen = this.senlist[i]
+            let findPipeRes = processTwinPipeString(sen.content)
             
-            let temp=sen.content.split(splitstr);
-            if (temp.length > 1){
-                // 分割后第二部分不为空
-                res+=`${fromtimeflag2str(sen.start)} ${temp[1].trim()}\n`;
+            if (findPipeRes.foundFirstPipe || (i==this.senlist.length-1 && sen.content.trim().length == 0) ){
+                // 存在合法的分隔符或是最后一句空句 就加上右半句，不管右半是否为空
+                res+=`${fromtimeflag2str(sen.start)} ${findPipeRes.rightPart}\n`;
             }
         }
         return res

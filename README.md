@@ -10,6 +10,8 @@ An online LRC lyric editor
 
 你可以在歌词中使用 `|` 来划分原文以及翻译，随后下载时使用 `下载歌词(双语)` 按钮下载可以双行显示的LRC歌词
 
+如果你不想让某个 `|` 被解析成双行分隔符，可使用转义 `\|` 
+
 如果使用双语LRC，则末行必须是空行
 
 ## 快捷键
@@ -30,6 +32,8 @@ Tab | 编辑状态 | 光标移动至下一个输入框
 ## Twin LRC
 
 You can use `|` to split raw text and translated, and press `download lyric(twin)` button to download LRC lyric that contains two lines on one timestamp.
+
+If you want to protect any `|` from analyzing as separater for twin lyc, you can use `\|` 
 
 If use twin lrc, the last line must be blank.
 
@@ -58,8 +62,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## `npm build`
 
-打包
+打包，通常此时 package.json 内 "homepage" 应设置为 "./"
 
 ## `npm run deploy`
 
-部署至github page
+部署至github page，通常此时 package.json 内 "homepage" 应设置为完整部署baseURL
