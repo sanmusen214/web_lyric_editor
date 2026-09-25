@@ -1,5 +1,28 @@
 #MainpageArea{
+    --player-height: 168px;
     width: 100%;
     height:100%;
     position: relative;
+    overflow: hidden;
+    background: #fbfcfe;
+}
+
+.github-button { position: fixed; right: 6px; top: 6px; z-index: 1100; font-size: 22px; }
+.side-controls-toggle {
+    position: fixed; left: 10px; bottom: 10px; z-index: 1200;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, .18);
+}
+#DataIOArea, #ToolsArea { transition: opacity .2s ease, transform .2s ease, visibility .2s; }
+.side-controls-hidden #DataIOArea, .side-controls-hidden #ToolsArea {
+    opacity: 0; visibility: hidden; pointer-events: none;
+}
+.side-controls-hidden #DataIOArea { transform: translate(-110%, -50%); }
+.side-controls-hidden #ToolsArea { transform: translate(110%, -50%); }
+
+@media (max-width: 700px) {
+    #MainpageArea { --player-height: 184px; }
+    .github-button { right: 2px; top: 2px; }
+    .side-controls-toggle { bottom: 8px; left: 8px; }
+    .side-controls-hidden #DataIOArea,
+    .side-controls-hidden #ToolsArea { transform: translateY(120%); }
 }

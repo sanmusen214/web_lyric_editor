@@ -3,6 +3,8 @@ body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
+  overscroll-behavior: none;
+  background: #fbfcfe;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -13,6 +15,10 @@ html,body{
   height:100%;
   width:100%;
 }
+
+#root, .App { height: 100%; width: 100%; }
+
+button, [role="button"], [role="slider"] { -webkit-tap-highlight-color: transparent; }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',

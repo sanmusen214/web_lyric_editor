@@ -2,7 +2,7 @@
     margin:0;
     padding:0;
     position: absolute;
-    top:100px;
+    top:var(--player-height);
     bottom: 0;
     width: 100%;
     overflow-x: hidden;
@@ -14,6 +14,21 @@
     margin-right: 20%;
     margin-left:10%;
 
+}
+
+@media (max-width: 700px) {
+    #EditArea { padding-top: 20px; padding-bottom: 170px; }
+    #EditArea .ant-timeline { margin: 0 10px 0 6px; }
+    #EditArea .ant-timeline.ant-timeline-label .ant-timeline-item-label { width: 76px; font-size: 12px; }
+    #EditArea .ant-timeline.ant-timeline-label .ant-timeline-item-tail,
+    #EditArea .ant-timeline.ant-timeline-label .ant-timeline-item-head,
+    #EditArea .ant-timeline.ant-timeline-label .ant-timeline-item-head-custom { left: 88px; }
+    #EditArea .ant-timeline.ant-timeline-label .ant-timeline-item-content {
+        left: 88px; width: calc(100% - 104px); padding-left: 14px; min-height: 44px;
+    }
+    #EditArea .ant-typography-edit-content { margin-left: 0; }
+    #EditArea .conshow { max-width: 100%; overflow-wrap: anywhere; }
+    #EditArea .hovershow { visibility: visible; }
 }
 
 #EditArea .senitem{

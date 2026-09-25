@@ -1,140 +1,239 @@
-import React, { ReactNode, useEffect, useRef, useState } from 'react'
-import "./PlayerArea.css"
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import './PlayerArea.css'
 import { Lyric } from '../../../../utils/lyric'
-import { Howl, Howler } from 'howler'
-import { Button, Col, Row, Slider, Spin, message } from 'antd'
-import { PauseOutlined, CaretRightOutlined } from '@ant-design/icons'
+import { Howl } from 'howler'
+import { Button, Slider, message } from 'antd'
+import { PauseOutlined, CaretRightOutlined, SoundOutlined } from '@ant-design/icons'
 import { fromtimeflag2str } from '../../../../utils/sentenceparse'
-import { Formatter } from 'antd/es/slider'
-import intl from "react-intl-universal"
+import intl from 'react-intl-universal'
+import { WaveformData } from '../../../../utils/audio'
 
 type PlayerAreaProps = {
   lyc: Lyric
   setLyc: React.Dispatch<React.SetStateAction<Lyric>>
   song: Howl | undefined
   loadsongicon: boolean
+  waveform: WaveformData | undefined
 }
 
-// 发生歌曲时间变化时，先变化时间。然后在渲染时用歌曲现在时间渲染进度条
+const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value))
 
-/**
- * （默认获取进度条当前所在位置百分比from 0-1）,有event的话就获取鼠标对应的进度条百分比
- */
-const getMusicUIPercent = (e?: React.MouseEvent<HTMLDivElement, MouseEvent>): number => {
-  const progressbar = document.querySelector("#playerprogress-bar")
-  const progressnow = document.querySelector("#playernow")
-  if (progressbar && progressnow) {
-    let left: number = 0
-    if (e) {
-      left = e.clientX - progressbar.getBoundingClientRect().x
-    } else {
-      left = progressnow.clientWidth
+const PlayerArea: React.FC<PlayerAreaProps> = ({ song, waveform }) => {
+  const [volume, setVolume] = useState(0.3)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const progressRef = useRef<HTMLDivElement>(null)
+  const progressNowRef = useRef<HTMLDivElement>(null)
+  const timeRef = useRef<HTMLSpanElement>(null)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const waveformHoverXRef = useRef<number | null>(null)
+  const draggingRef = useRef(false)
+  const volumeRef = useRef(volume)
+
+  const getCurrentTime = useCallback(() => {
+    const seek = song?.seek()
+    return typeof seek === 'number' && Number.isFinite(seek) ? seek : 0
+  }, [song])
+
+  const seekTo = useCallback((time: number) => {
+    if (!song) return
+    const duration = song.duration()
+    if (!Number.isFinite(duration) || duration <= 0) return
+    song.seek(clamp(time, 0, duration))
+  }, [song])
+
+  const drawWaveform = useCallback((currentTime: number) => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const rect = canvas.getBoundingClientRect()
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const width = Math.max(1, Math.round(rect.width * dpr))
+    const height = Math.max(1, Math.round(rect.height * dpr))
+    if (canvas.width !== width || canvas.height !== height) {
+      canvas.width = width
+      canvas.height = height
     }
-    const total: number = progressbar.clientWidth
-    return Math.max(Math.min(1, left / total), 0)
-  }
-  return 0
-}
 
-/**
- * 改变进度条UI位置,barprecent from 0 to 1
- */
-export const changeBarNow = (barprecent: number) => {
-  const progressnow: HTMLImageElement | null = document.querySelector("#playernow")
-  if (progressnow) {
-    progressnow.style.width = `${barprecent * 100}%`
-  }
-}
+    const context = canvas.getContext('2d')
+    if (!context) return
+    context.setTransform(dpr, 0, 0, dpr, 0, 0)
+    const cssWidth = width / dpr
+    const cssHeight = height / dpr
+    context.clearRect(0, 0, cssWidth, cssHeight)
+    context.fillStyle = '#f5f8fb'
+    context.fillRect(0, 0, cssWidth, cssHeight)
 
-const PlayerArea: React.FC<PlayerAreaProps> = (props) => {
-
-  let [isDrag, setIsDrag] = useState<boolean>(false);
-  let [volume, setVolume] = useState<number>(0.3);
-  let [playicon, setPlayIcon] = useState<"play" | "pause">("pause")
-
-
-  // 播放完自动暂停自动切换图标
-  props.song?.on("end", () => {
-    setPlayIcon("pause")
-  })
-
-  // Animation实时改变进度条位置
-  const updateBar = () => {
-    changeBarNow((props.song?.seek() || 0) / (props.song?.duration() || 1))
-    const nstr = document.querySelector("#nowtimestr")
-    if (nstr) {
-      nstr.innerHTML = fromtimeflag2str((props.song?.seek() || 0) * 100)
+    context.strokeStyle = '#dce5ec'
+    context.lineWidth = 1
+    for (let second = -5; second <= 5; second += 1) {
+      const x = ((second + 5) / 10) * cssWidth
+      context.beginPath()
+      context.moveTo(x, 0)
+      context.lineTo(x, cssHeight)
+      context.stroke()
     }
-    requestAnimationFrame(updateBar)
-  }
+
+    if (waveform && waveform.peaks.length > 0) {
+      const centerY = cssHeight / 2
+      const bars = Math.max(80, Math.floor(cssWidth / 2))
+      context.fillStyle = '#5b8ff9'
+      for (let bar = 0; bar < bars; bar += 1) {
+        const time = currentTime - 5 + ((bar + 0.5) / bars) * 10
+        const index = Math.floor((time / waveform.duration) * waveform.peaks.length)
+        const peak = index >= 0 && index < waveform.peaks.length ? waveform.peaks[index] : 0
+        const barHeight = Math.max(1, peak * (cssHeight - 10))
+        const x = (bar / bars) * cssWidth
+        context.fillRect(x, centerY - barHeight / 2, Math.max(1, cssWidth / bars - 0.7), barHeight)
+      }
+    }
+
+    if (waveformHoverXRef.current !== null) {
+      const hoverX = clamp(waveformHoverXRef.current, 0, cssWidth)
+      context.fillStyle = 'rgba(80, 91, 102, .72)'
+      context.fillRect(hoverX - 0.5, 0, 1, cssHeight)
+    }
+
+    context.fillStyle = '#20a464'
+    context.fillRect(cssWidth / 2 - 1, 0, 2, cssHeight)
+  }, [waveform])
+
   useEffect(() => {
-    updateBar()
-    setPlayIcon("pause")
-  }, [props.song])
+    setIsPlaying(false)
+    if (!song) return
 
-  // 拖拽时静音，然后取消拖拽时复原
-  useEffect(() => {
-    console.log(isDrag)
-    if (isDrag) {
-      props.song?.volume(0)
-    } else {
-      props.song?.volume(volume)
+    const onPlay = () => setIsPlaying(true)
+    const onStop = () => setIsPlaying(false)
+    const onPlayError = () => {
+      setIsPlaying(false)
+      message.error(intl.get('music-load-error'))
     }
-  }, [isDrag])
+    song.on('play', onPlay)
+    song.on('pause', onStop)
+    song.on('stop', onStop)
+    song.on('end', onStop)
+    song.on('playerror', onPlayError)
+    song.volume(volumeRef.current)
 
-  /**
- * 拖进度条后，获取进度百分比，改变音乐时间
- */
-  const dragBarNow: React.MouseEventHandler<HTMLDivElement> = (e) => {
-    const percent = getMusicUIPercent(e)
-    props.song?.seek(percent * props.song?.duration())
+    return () => {
+      song.off('play', onPlay)
+      song.off('pause', onStop)
+      song.off('stop', onStop)
+      song.off('end', onStop)
+      song.off('playerror', onPlayError)
+    }
+  }, [song])
+
+  useEffect(() => {
+    let animationFrame = 0
+    let lastDraw = 0
+    const update = (timestamp: number) => {
+      const currentTime = getCurrentTime()
+      const duration = song?.duration() || waveform?.duration || 0
+      const percent = duration > 0 ? clamp(currentTime / duration, 0, 1) : 0
+      if (progressNowRef.current) progressNowRef.current.style.transform = `scaleX(${percent})`
+      if (progressRef.current) progressRef.current.setAttribute('aria-valuenow', String(Math.round(percent * 100)))
+      if (timeRef.current) {
+        const current = fromtimeflag2str(currentTime * 100)
+        const total = duration > 0 ? fromtimeflag2str(duration * 100) : '--:--.--'
+        timeRef.current.textContent = `${current} / ${total}`
+      }
+      if (timestamp - lastDraw > 32) {
+        drawWaveform(currentTime)
+        lastDraw = timestamp
+      }
+      animationFrame = requestAnimationFrame(update)
+    }
+    animationFrame = requestAnimationFrame(update)
+    return () => cancelAnimationFrame(animationFrame)
+  }, [drawWaveform, getCurrentTime, song, waveform])
+
+  const seekFromProgressPointer = (clientX: number) => {
+    const progress = progressRef.current
+    const duration = song?.duration() || 0
+    if (!progress || duration <= 0) return
+    const rect = progress.getBoundingClientRect()
+    seekTo(((clientX - rect.left) / rect.width) * duration)
   }
 
-  // 点击播放/暂停按钮
-  const playstopsong = () => {
-    if (!props.song) {
-      message.destroy()
-      message.warning(intl.get("nomusic-warn"))
+  const onProgressPointerDown: React.PointerEventHandler<HTMLDivElement> = event => {
+    draggingRef.current = true
+    event.currentTarget.setPointerCapture(event.pointerId)
+    seekFromProgressPointer(event.clientX)
+  }
+
+  const onProgressPointerMove: React.PointerEventHandler<HTMLDivElement> = event => {
+    if (draggingRef.current) seekFromProgressPointer(event.clientX)
+  }
+
+  const stopDragging: React.PointerEventHandler<HTMLDivElement> = event => {
+    draggingRef.current = false
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+
+  const onProgressKeyDown: React.KeyboardEventHandler<HTMLDivElement> = event => {
+    if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return
+    event.preventDefault()
+    seekTo(getCurrentTime() + (event.key === 'ArrowRight' ? 1 : -1))
+  }
+
+  const onWaveformPointerDown: React.PointerEventHandler<HTMLCanvasElement> = event => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    seekTo(getCurrentTime() + ((event.clientX - rect.left) / rect.width - 0.5) * 10)
+  }
+
+  const onWaveformPointerMove: React.PointerEventHandler<HTMLCanvasElement> = event => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    waveformHoverXRef.current = event.clientX - rect.left
+  }
+
+  const onWaveformPointerLeave = () => {
+    waveformHoverXRef.current = null
+  }
+
+  const togglePlayback = () => {
+    if (!song) {
+      message.warning(intl.get('nomusic-warn'))
       return
     }
-    props.song?.volume(volume)
-    if (props.song?.playing()) {
-      props.song?.pause()
-      setPlayIcon("pause")
-    } else {
-      props.song?.play()
-      setPlayIcon("play")
-    }
+    if (song.playing()) song.pause()
+    else song.play()
   }
 
-  const onVolChange = (e: number) => {
-    setVolume(e)
-    props.song?.volume(e)
+  const onVolumeChange = (value: number) => {
+    volumeRef.current = value
+    setVolume(value)
+    song?.volume(value)
   }
-
-  const sliderformatter: Formatter = (value: number | undefined) => {
-    return `${Math.floor((value || 0) * 100)}%`
-  }
-
 
   return (
-    <div id="PlayerArea" onMouseLeave={() => { setIsDrag(false) }} onMouseMove={(e) => { if (isDrag) { dragBarNow(e) } }} onMouseUp={() => { setIsDrag(false) }}>
-      <div id="playerprogress">
-        <>
-          <div id="playerprogress-bar" onMouseDown={(e) => { setIsDrag(true); dragBarNow(e) }}>
-            <div id="playernow"></div>
-          </div>
-          <div id="buttonsArea">
-            <Row align={'middle'} justify={'space-between'}>
-              <span id="nowtimestr"></span>
-              <Button onClick={playstopsong}>{playicon === "play" ? <><PauseOutlined /></> : <><CaretRightOutlined /></>}</Button>
-              <Col span={6} style={{ marginTop: '3px' }}>{intl.get("volume")}<Slider tooltip={{ formatter: sliderformatter }} value={volume} step={0.01} max={1.2} onChange={onVolChange} /></Col>
-            </Row>
-          </div>
-        </>
-
+    <header id="PlayerArea">
+      <div className="waveform-wrap">
+        <canvas ref={canvasRef} className="waveform-canvas" onPointerDown={onWaveformPointerDown}
+          onPointerMove={onWaveformPointerMove} onPointerLeave={onWaveformPointerLeave}
+          aria-label={intl.get('waveform-label')} role="img" />
+        {!waveform && <span className="waveform-empty">{intl.get('waveform-empty')}</span>}
+        <span className="waveform-range waveform-range-left">-5s</span>
+        <span className="waveform-range waveform-range-right">+5s</span>
       </div>
-    </div>
+      <div className="player-controls">
+        <div ref={progressRef} id="playerprogress-bar" role="slider" aria-label="Progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0}
+          tabIndex={0} onKeyDown={onProgressKeyDown}
+          onPointerDown={onProgressPointerDown} onPointerMove={onProgressPointerMove}
+          onPointerUp={stopDragging} onPointerCancel={stopDragging}>
+          <div ref={progressNowRef} id="playernow" />
+        </div>
+        <div id="buttonsArea">
+          <span ref={timeRef} id="nowtimestr">00:00.00 / --:--.--</span>
+          <Button className="play-button" shape="circle" onClick={togglePlayback}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+            icon={isPlaying ? <PauseOutlined /> : <CaretRightOutlined />} />
+          <div className="volume-control">
+            <SoundOutlined />
+            <Slider value={volume} step={0.01} max={1} onChange={onVolumeChange}
+              tooltip={{ formatter: value => `${Math.floor((value || 0) * 100)}%` }} />
+          </div>
+        </div>
+      </div>
+    </header>
   )
 }
 

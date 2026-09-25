@@ -39,17 +39,28 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
   /**
    * 重绘，使正在播放的歌曲高亮,时间错误的歌词红色
    */
-  const updateNowSenUI = () => {
-    const nowPlaySec001: number = 100 * (props.song?.seek() || 0)
-    const nowPlayingInd: number = props.lyc.getNowLyricIndex(nowPlaySec001)
-    setNowind(nowPlayingInd)
-    window.nowsenind = nowPlayingInd
-    const errInd: number = props.lyc.checkErrTime()
-    setErrind(errInd)
-    requestAnimationFrame(updateNowSenUI)
-  }
   useEffect(() => {
-    updateNowSenUI()
+    let animationFrame = 0
+    let previousIndex = Number.NaN
+    let previousError = Number.NaN
+    const updateNowSenUI = () => {
+      const seek = props.song?.seek()
+      const nowPlaySec001 = 100 * (typeof seek === 'number' ? seek : 0)
+      const nowPlayingInd = props.lyc.getNowLyricIndex(nowPlaySec001)
+      const errorIndex = props.lyc.checkErrTime()
+      if (nowPlayingInd !== previousIndex) {
+        previousIndex = nowPlayingInd
+        setNowind(nowPlayingInd)
+        window.nowsenind = nowPlayingInd
+      }
+      if (errorIndex !== previousError) {
+        previousError = errorIndex
+        setErrind(errorIndex)
+      }
+      animationFrame = requestAnimationFrame(updateNowSenUI)
+    }
+    animationFrame = requestAnimationFrame(updateNowSenUI)
+    return () => cancelAnimationFrame(animationFrame)
   }, [props.lyc, props.song])
   /**
    * 监听当前歌词切换,设置如果同步滚动
@@ -57,23 +68,29 @@ const EditArea: React.FC<EditAreaProps> = (props) => {
   useEffect(() => {
     // 如果歌词符合递增顺序(无乱序）且开启了同步滚动
     if (props.syncscroll && nowind !== -1) {
-      animate({
+      const editArea = document.querySelector("#EditArea")
+      const nowPlaying = document.querySelector(".nowplaying") as HTMLDivElement | null
+      if (!editArea || !nowPlaying) return
+      const controls = animate({
         from: document.querySelector("#EditArea")?.scrollTop,
-        to: (document.querySelector(".nowplaying") as HTMLDivElement)?.offsetTop - 150,
+        to: nowPlaying.offsetTop - 150,
         duration: 300,
-        onUpdate: latest => document.querySelector("#EditArea")?.scrollTo(0, latest)
+        onUpdate: latest => editArea.scrollTo(0, latest)
       })
+      return () => controls.stop()
     }
   }, [nowind, props.syncscroll])
 
   // 绑定快捷键到Ctrl+H
   useEffect(() => {
-    window.addEventListener('keydown', (e) => {
+    const handleFocusShortcut = (e: globalThis.KeyboardEvent) => {
         if (e.key.toUpperCase() === "H" && e.ctrlKey) {
           e.preventDefault()
           jumpMouseTo(window.nowsenind)
         }
-    })
+    }
+    window.addEventListener('keydown', handleFocusShortcut)
+    return () => window.removeEventListener('keydown', handleFocusShortcut)
   },[])
 
   /**

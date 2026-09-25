@@ -1,4 +1,5 @@
-import React, { FC, useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import './Mainpage.css'
 import DataIO from './components/DataIO/DataIO'
 import EditArea from './components/EditArea/EditArea'
 import PlayerArea from './components/PlayerArea/PlayerArea'
@@ -6,8 +7,10 @@ import ToolsArea from './components/ToolsArea/ToolsArea'
 
 import { Lyric } from '../../utils/lyric'
 import { Howl } from 'howler'
-import { message } from 'antd'
-import {GithubOutlined} from '@ant-design/icons'
+import { Button, message, Tooltip } from 'antd'
+import { EyeInvisibleOutlined, EyeOutlined, GithubOutlined } from '@ant-design/icons'
+import { WaveformData } from '../../utils/audio'
+import intl from 'react-intl-universal'
 
 export default function Mainpage() {
   const [lyc, setLyc] = useState<Lyric>(new Lyric(false))
@@ -15,6 +18,10 @@ export default function Mainpage() {
   const [song,setSong] = useState<Howl|undefined>()
   const [loadsongicon,setLoadsongicon] = useState<boolean>(false)
   const [syncscroll,setSyncscroll] = useState<boolean>(false)
+  const [waveform, setWaveform] = useState<WaveformData | undefined>()
+  const [showSideControls, setShowSideControls] = useState<boolean>(true)
+  const songUrlRef = useRef<string>()
+  const songRef = useRef<Howl>()
 
 
   // 从localStorage里拿上次歌词
@@ -23,10 +30,18 @@ export default function Mainpage() {
   },[])
 
   // 上传新歌曲的最后回调
-  function replaceSong(newsong:Howl){
-    song?.stop()
+  function replaceSong(newsong: Howl, objectUrl: string){
+    song?.unload()
+    if (songUrlRef.current) URL.revokeObjectURL(songUrlRef.current)
+    songUrlRef.current = objectUrl
+    songRef.current = newsong
     setSong(newsong)
   }
+
+  useEffect(() => () => {
+    songRef.current?.unload()
+    if (songUrlRef.current) URL.revokeObjectURL(songUrlRef.current)
+  }, [])
 
   // 上传提示
   useEffect(()=>{
@@ -61,14 +76,20 @@ export default function Mainpage() {
   // }
 
   return (
-    <div id="MainpageArea">
-      <span style={{position:"fixed", right:3, top:8, cursor:"pointer"}}>
-        <GithubOutlined onClick={()=>{window.open("https://github.com/sanmusen214/web_lyric_editor")}} style={{fontSize: 25}}/>
-      </span>
-      <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon}/>
-      <DataIO lyc={lyc} setLyc={setLyc} song={song} replaceSong={replaceSong} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon}/>
+    <div id="MainpageArea" className={showSideControls ? '' : 'side-controls-hidden'}>
+      <Tooltip title="GitHub">
+        <Button className="github-button" type="text" aria-label="GitHub" icon={<GithubOutlined />} onClick={()=>{window.open("https://github.com/sanmusen214/web_lyric_editor", "_blank", "noopener,noreferrer")}} />
+      </Tooltip>
+      <PlayerArea lyc={lyc} setLyc={setLyc} song={song} loadsongicon={loadsongicon} waveform={waveform}/>
+      <DataIO lyc={lyc} setLyc={setLyc} song={song} replaceSong={replaceSong} setWaveform={setWaveform} loadsongicon={loadsongicon} setLoadsongicon={setLoadsongicon}/>
       <EditArea lyc={lyc} setLyc={setLyc} song={song} syncscroll={syncscroll}/>
       <ToolsArea lyc={lyc} song={song} setLyc={setLyc} syncscroll={syncscroll} setSyncscroll={setSyncscroll}/>
+      <Tooltip title={showSideControls ? intl.get('hide-side-controls') : intl.get('show-side-controls')} placement="right">
+        <Button className="side-controls-toggle" shape="circle"
+          aria-label={showSideControls ? intl.get('hide-side-controls') : intl.get('show-side-controls')}
+          icon={showSideControls ? <EyeInvisibleOutlined /> : <EyeOutlined />}
+          onClick={() => setShowSideControls(value => !value)} />
+      </Tooltip>
     </div>
   )
 }

@@ -1,21 +1,23 @@
-import React, { ChildContextProvider, useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { CloudDownloadOutlined, UploadOutlined, FileOutlined, VerticalAlignBottomOutlined } from '@ant-design/icons';
-import { Col, Drawer, Popconfirm, Row, UploadProps } from 'antd';
+import { Col, Drawer, Popconfirm, Row } from 'antd';
 import { Button, message, Upload } from 'antd';
 import { PopInputArea } from './PopInputArea';
-import { Info, Lyric, Sentence, create_from_LRC } from '../../../../utils/lyric';
+import { Info, Lyric, create_from_LRC } from '../../../../utils/lyric';
 import { Howl } from 'howler'
 import "./DataIO.css"
 import { RcFile } from 'antd/es/upload';
 
 import intl from 'react-intl-universal'
+import { createWaveformData, WaveformData } from '../../../../utils/audio';
 
 
 type DataIOProps = {
     lyc: Lyric
     setLyc: React.Dispatch<React.SetStateAction<Lyric>>
     song: Howl | undefined
-    replaceSong: (song: Howl) => void
+    replaceSong: (song: Howl, objectUrl: string) => void
+    setWaveform: React.Dispatch<React.SetStateAction<WaveformData | undefined>>
     loadsongicon: boolean
     setLoadsongicon: React.Dispatch<React.SetStateAction<boolean>>
 }
@@ -25,8 +27,14 @@ export default function DataIO(props: DataIOProps) {
     const [drawopen,setDrawopen]=useState<boolean>(false)
     const [uploadedFileName, setUploadedFileName] = useState<string>("")
 
-    const [showUploadButtons, setShowUploadButtons] = useState<boolean>(false)
-    const [showDownloadButtons, setShowDownloadButtons] = useState<boolean>(false)
+    const uploadTokenRef = useRef(0)
+    const pendingAudioRef = useRef<{ song: Howl, url: string }>()
+
+    useEffect(() => () => {
+        uploadTokenRef.current += 1
+        pendingAudioRef.current?.song.unload()
+        if (pendingAudioRef.current) URL.revokeObjectURL(pendingAudioRef.current.url)
+    }, [])
 
     function uploadlyric(file: RcFile) {
         const reader = new FileReader();
@@ -39,31 +47,56 @@ export default function DataIO(props: DataIOProps) {
     }
 
     function uploadmusic(file: RcFile) {
-        let fileNameSplit = file.name.split(".")
-        // 删掉文件名后缀
-        fileNameSplit.pop()
-        setUploadedFileName(fileNameSplit.join("."))
+        const uploadToken = uploadTokenRef.current + 1
+        uploadTokenRef.current = uploadToken
+        pendingAudioRef.current?.song.unload()
+        if (pendingAudioRef.current) URL.revokeObjectURL(pendingAudioRef.current.url)
+        pendingAudioRef.current = undefined
 
-        const reader = new FileReader();
+        const lastDot = file.name.lastIndexOf('.')
+        setUploadedFileName(lastDot > 0 ? file.name.slice(0, lastDot) : file.name)
+
         props.setLoadsongicon(true)
-        reader.addEventListener('load', () => {
-            return new Promise((resolve) => {
-                const res = reader.result
-                if (typeof (res) === "string") {
-                    const song = new Howl({
-                        src: res,
-                        format: file.name.split(".").pop()?.toLowerCase()
-                    })
-                    song.on("load", () => {
-                        props.replaceSong(song)
-                    })
-                    resolve(song)
-                }
-            }).then((song) => {
-                props.setLoadsongicon(false)
+        props.setWaveform(undefined)
+
+        const objectUrl = URL.createObjectURL(file)
+        const extension = file.name.includes('.') ? file.name.split('.').pop()?.toLowerCase() : undefined
+        const song = new Howl({
+            src: [objectUrl],
+            format: extension ? [extension] : undefined,
+            html5: true,
+            preload: true,
+            volume: 0.3
+        })
+        pendingAudioRef.current = { song, url: objectUrl }
+        let audioLoaded = false
+        let analyzedWaveform: WaveformData | undefined
+
+        song.once('load', () => {
+            if (uploadToken !== uploadTokenRef.current) return
+            audioLoaded = true
+            pendingAudioRef.current = undefined
+            props.replaceSong(song, objectUrl)
+            if (analyzedWaveform) props.setWaveform(analyzedWaveform)
+            props.setLoadsongicon(false)
+        })
+        song.once('loaderror', (_id, error) => {
+            if (uploadToken !== uploadTokenRef.current) return
+            uploadTokenRef.current += 1
+            pendingAudioRef.current = undefined
+            URL.revokeObjectURL(objectUrl)
+            props.setLoadsongicon(false)
+            message.error(`${intl.get('music-load-error')}: ${String(error)}`)
+        })
+
+        createWaveformData(file)
+            .then(data => {
+                analyzedWaveform = data
+                if (audioLoaded && uploadToken === uploadTokenRef.current) props.setWaveform(data)
             })
-        });
-        reader.readAsDataURL(file)
+            .catch(() => {
+                if (uploadToken === uploadTokenRef.current) message.warning(intl.get('waveform-unavailable'))
+            })
         return false
     }
 
@@ -108,24 +141,20 @@ export default function DataIO(props: DataIOProps) {
     return (<div id="DataIOArea">
         <Col>
             <Row justify={'start'}>
-                <Upload fileList={[]} beforeUpload={uploadmusic}>
+                <Upload fileList={[]} accept="audio/*,.mp3,.wav,.m4a,.aac,.ogg,.flac,.opus" beforeUpload={uploadmusic}>
                     <Button style={props?.song ? {} : { 'color': 'green' }} icon={<UploadOutlined />}>{intl.get("upload-music")}</Button>
                 </Upload>
             </Row>
             {/* 文字超过10个自动缩略 */}
             <div style={{ 'height': '24px', 'width': '8em', 'overflow': 'hidden', 'textOverflow': 'ellipsis','whiteSpace': 'nowrap'}}>{uploadedFileName}</div>
-            <Row justify={'start'} 
-            onMouseEnter={()=>setShowUploadButtons(true)}
-            onMouseLeave={()=>setShowUploadButtons(false)}
-            >
+            <Row justify={'start'} className="data-button-group">
                 <Upload fileList={[]} accept='.lrc' beforeUpload={uploadlyric}>
-                    <Button style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
+                    <Button style={props?.lyc.senlist.length === 0 ? { 'color': 'green' } : {}} icon={<UploadOutlined />}>{intl.get("upload-lyric")}</Button>
                 </Upload>
-                {showUploadButtons ? <><div style={{ 'width': '4px' }}></div>
-                <Button icon={<CloudDownloadOutlined />} onClick={()=>setDrawopen(true)}>{intl.get("upload-sens")}</Button>
-                <div style={{ 'width': '4px' }}></div>
-                <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button></>:<></>}
-                
+                <div className="secondary-buttons">
+                    <Button icon={<CloudDownloadOutlined />} onClick={()=>setDrawopen(true)}>{intl.get("upload-sens")}</Button>
+                    <Button icon={<CloudDownloadOutlined />} onClick={() => { window.open("https://music.liuzhijin.cn/") }}>{intl.get("find-lyric")}</Button>
+                </div>
 
             </Row>
             <div style={{ 'height': '4px' }}></div>
@@ -138,17 +167,15 @@ export default function DataIO(props: DataIOProps) {
                     cancelText={intl.get("yes")}
                     placement="topLeft"
                 >
-                    <Button icon={<FileOutlined />} style={props?.lyc.senlist.length == 0 ? { 'color': 'green' } : {}}>{intl.get("create-lyric")}</Button>
+                    <Button icon={<FileOutlined />} style={props?.lyc.senlist.length === 0 ? { 'color': 'green' } : {}}>{intl.get("create-lyric")}</Button>
                 </Popconfirm>
             </Row>
             <div style={{ 'height': '24px' }}></div>
-            <Row justify={'start'} 
-            onMouseEnter={()=>setShowDownloadButtons(true)}
-            onMouseLeave={()=>setShowDownloadButtons(false)}
-            >
+            <Row justify={'start'} className="data-button-group">
                 <Button icon={<VerticalAlignBottomOutlined />} onClick={()=>downloadLyc(false)}>{intl.get("download-lyric")}</Button>
-                {showDownloadButtons ? <><div style={{ 'width': '4px' }}></div><Button icon={<VerticalAlignBottomOutlined />} onClick={()=>downloadLyc(true)}>{intl.get("download-lyric-twin")}</Button></>:<></>}
-                
+                <div className="secondary-buttons">
+                    <Button icon={<VerticalAlignBottomOutlined />} onClick={()=>downloadLyc(true)}>{intl.get("download-lyric-twin")}</Button>
+                </div>
             </Row>
         </Col>
         <Drawer 

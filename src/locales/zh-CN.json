@@ -20,6 +20,12 @@
     "PlayerArea":"Player Area",
     "volume":"音量",
     "nomusic-warn":"未上传歌曲或不支持所上传的歌曲格式",
+    "music-load-error":"音频加载失败",
+    "waveform-unavailable":"此音频可以继续尝试播放，但浏览器无法生成波形",
+    "waveform-empty":"导入音频后将在这里显示前后 10 秒波形",
+    "waveform-label":"当前播放位置前后十秒的音频波形，点击可跳转",
+    "hide-side-controls":"隐藏两侧工具",
+    "show-side-controls":"显示两侧工具",
 
     "ToolArea":"Tool Area",
     "offset":"偏移",

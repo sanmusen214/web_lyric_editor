@@ -5,4 +5,31 @@
     left:5px;
     transform: translateY(-50%);
     z-index: 999;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .92);
+    box-shadow: 0 3px 14px rgba(0, 0, 0, .08);
+}
+
+.data-button-group { gap: 4px; }
+.secondary-buttons {
+    display: flex;
+    gap: 4px;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-width .2s ease, opacity .2s ease;
+}
+.data-button-group:hover .secondary-buttons,
+.data-button-group:focus-within .secondary-buttons { max-width: 420px; opacity: 1; }
+
+@media (max-width: 700px) {
+    #DataIOArea {
+        top: auto; bottom: 48px; left: 6px; transform: none;
+        max-width: calc(58vw - 8px); max-height: 155px; overflow: auto;
+        padding: 6px;
+    }
+    #DataIOArea .ant-row { flex-wrap: wrap; gap: 3px; }
+    #DataIOArea .ant-btn { font-size: 12px; padding-inline: 7px; }
+    #DataIOArea .secondary-buttons { max-width: none; opacity: 1; overflow: visible; flex-wrap: wrap; }
 }

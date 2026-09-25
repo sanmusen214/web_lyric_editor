@@ -5,4 +5,16 @@
         right:5px;
         transform: translateY(-50%);
         z-index: 999;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, .92);
+        box-shadow: 0 3px 14px rgba(0, 0, 0, .08);
+}
+
+@media (max-width: 700px) {
+        #ToolsArea {
+                top: auto; right: 6px; bottom: 48px; transform: none;
+                max-width: calc(42vw - 8px); padding: 7px; font-size: 12px;
+        }
+        #ToolsArea .ant-row { justify-content: flex-end; gap: 3px; }
 }

@@ -20,7 +20,13 @@
 
     "PlayerArea":"Player Area",
     "volume":"volume",
-    "nomusic-warn":"No music uploaded or file type is not supported",
+    "nomusic-warn":"No music uploaded or the file type is not supported",
+    "music-load-error":"Audio failed to load",
+    "waveform-unavailable":"Playback may still work, but this browser could not generate a waveform",
+    "waveform-empty":"Import audio to see the surrounding 10-second waveform",
+    "waveform-label":"Audio waveform for the surrounding ten seconds; tap to seek",
+    "hide-side-controls":"Hide side controls",
+    "show-side-controls":"Show side controls",
 
     "ToolArea":"Tool Area",
     "offset":"offset",
